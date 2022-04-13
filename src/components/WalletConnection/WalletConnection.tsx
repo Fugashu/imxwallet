@@ -7,7 +7,7 @@ async function sdkExample() {
     // Register user, you can persist address to local storage etc.
     const { address } = await link.setup({});
     localStorage.setItem('address', address);
-
+/*
     // Deposit ETH into IMX
     link.deposit({
         type: ETHTokenType.ETH,
@@ -43,7 +43,7 @@ async function sdkExample() {
     // Complete withdrawal
     link.completeWithdrawal({
         type: ETHTokenType.ETH,
-    });
+    });*/
 }
 const WalletConnection = () => {
     return (
