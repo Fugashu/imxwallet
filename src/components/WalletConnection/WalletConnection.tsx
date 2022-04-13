@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, ETHTokenType } from '@imtbl/imx-sdk';
+import { Link } from '@imtbl/imx-sdk';
 
 async function sdkExample() {
     const link = new Link('https://link.ropsten.x.immutable.com');
