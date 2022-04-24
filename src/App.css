@@ -1,5 +1,10 @@
+body{
+  margin-top: 10px;
+  background: #282c34;
+}
 .App {
   text-align: center;
+
 }
 
 .App-logo {
@@ -38,7 +43,12 @@
 }
 
 #selectedFile {
-  border-style: dotted;
+  border-style: solid;
   cursor: not-allowed;
   color: #777;
+  margin-right: 10px;
+}
+
+.Uploader{
+  margin-top: 20px;
 }

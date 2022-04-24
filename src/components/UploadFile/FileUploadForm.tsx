@@ -1,14 +1,14 @@
 import React, { useState } from "react"; import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
-
 interface PostData {
     title: string;
     body: string;
     file: File | null;
 }
 
-const FileUploadForm: React.FunctionComponent = () => {
+export default function FileUploadForm(){
+
     const [formValues, setFormValues] = useState<PostData>({
         title: "",
         body: "",
@@ -23,23 +23,20 @@ const FileUploadForm: React.FunctionComponent = () => {
     };
 
     return (
-        <div>
+        <div className="Uploader">
 
-            <input  id="selectedFile" readOnly value={formValues.file?.name ?? "No File selected.."}/>
+            {<input  id="selectedFile" readOnly value={formValues.file?.name ?? "No File selected.."}/>}
 
-            <Button variant="contained" component="label" className="UploadButton">
+            <Button variant="contained"   component="label" size = "small">
                 Upload File
-
                 <input type="file" onChange={handleFileChange} hidden />
-
             </Button>
 
             <Box marginY={3}>
-                <Button onClick={() => console.log("submit")}>Submit Post </Button>
+                <Button variant="contained" onClick={() => console.log("submit")}>Submit Post </Button>
             </Box>
 
         </div>
     );
 };
 
-export default FileUploadForm;
