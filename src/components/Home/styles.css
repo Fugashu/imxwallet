@@ -1,0 +1,5 @@
+.action-card-wrapper{
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
