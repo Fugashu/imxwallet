@@ -1,14 +1,22 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import ActionAreaCard from "../ActionCards/ActionCards";
-import WalletConnection from "../WalletConnection/WalletConnection";
 import cardData from "../ActionCards/cardData";
 
 import "./styles.css";
-const Home = () => {
+import Button from "@mui/material/Button";
+interface HomeWallet {
+    walletAddress: string;
+    handleClick() :Promise<void>;
+}
+
+const Home = (props:HomeWallet) => {
+
+
   return (
     <div>
-      <WalletConnection />
 
+        {props.walletAddress === 'undefined' ?         <Button variant="contained" component="label" size="small" onClick={props.handleClick}>Connect Wallet</Button>
+            :
       <div className="action-card-wrapper">
         {cardData.map((data) => {
           return (
@@ -21,7 +29,7 @@ const Home = () => {
             />
           );
         })}
-      </div>
+      </div>}
     </div>
   );
 };
