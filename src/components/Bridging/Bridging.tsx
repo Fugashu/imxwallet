@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 require('dotenv').config();
 
 interface BridgingProps {
-    client: ImmutableXClient,
-    link: Link,
-    wallet: string
+    imxLink: Link,
+    walletAddress: string,
+    apiClient: ImmutableXClient
 }
 
-const Bridging = ({client, link, wallet}: BridgingProps) => {
+const Bridging = (props: BridgingProps) => {
     // withdrawals
     const [preparingWithdrawals, setPreparingWithdrawals] = useState<ImmutableMethodResults.ImmutableGetWithdrawalsResult>(Object);
     const [readyWithdrawals, setReadyWithdrawals] = useState<ImmutableMethodResults.ImmutableGetWithdrawalsResult>(Object);
@@ -29,33 +29,37 @@ const Bridging = ({client, link, wallet}: BridgingProps) => {
     }, [])
 
     async function load(): Promise<void> {
-        setPreparingWithdrawals(await client.getWithdrawals({
-            user: wallet,
+        setPreparingWithdrawals(await props.apiClient.getWithdrawals({
+            user: props.walletAddress,
             rollup_status: ImmutableRollupStatus.included
         })) // included in batch awaiting confirmation
-        setReadyWithdrawals(await client.getWithdrawals({
-            user: wallet,
+        setReadyWithdrawals(await props.apiClient.getWithdrawals({
+            user: props.walletAddress,
             rollup_status: ImmutableRollupStatus.confirmed,
             withdrawn_to_wallet: false
         })) // confirmed on-chain in a batch and ready to be withdrawn
-        setCompletedWithdrawals(await client.getWithdrawals({
-            user: wallet,
+        setCompletedWithdrawals(await props.apiClient.getWithdrawals({
+            user: props.walletAddress,
             withdrawn_to_wallet: true
         })) // confirmed on-chain in a batch and already withdrawn to L1 wallet
     };
 
     // deposit an NFT
     async function depositNFT() {
-        await link.deposit({
+        try{
+        await props.imxLink.deposit({
             type: ERC721TokenType.ERC721,
             tokenId: depositTokenId,
             tokenAddress: depositTokenAddress
-        })
+        })}
+        catch (e){
+            console.log(`Error while depositing:${e}`);
+        }
     };
 
     // deposit eth
     async function depositETH() {
-        await link.deposit({
+        await props.imxLink.deposit({
             type: ETHTokenType.ETH,
             amount: depositAmount,
         })
@@ -63,7 +67,7 @@ const Bridging = ({client, link, wallet}: BridgingProps) => {
 
     // prepare an NFT withdrawal
     async function prepareWithdrawalNFT() {
-        await link.prepareWithdrawal({
+        await props.imxLink.prepareWithdrawal({
             type: ERC721TokenType.ERC721,
             tokenId: prepareTokenId,
             tokenAddress: prepareTokenAddress
@@ -72,7 +76,7 @@ const Bridging = ({client, link, wallet}: BridgingProps) => {
 
     // prepare an eth withdrawal
     async function prepareWithdrawalETH() {
-        await link.prepareWithdrawal({
+        await props.imxLink.prepareWithdrawal({
             type: ETHTokenType.ETH,
             amount: prepareAmount,
         })
@@ -80,7 +84,7 @@ const Bridging = ({client, link, wallet}: BridgingProps) => {
 
     // complete an NFT withdrawal
     async function completeWithdrawalNFT() {
-        await link.completeWithdrawal({
+        await props.imxLink.completeWithdrawal({
             type: ERC721TokenType.ERC721,
             tokenId: completeTokenId,
             tokenAddress: completeTokenAddress
@@ -89,7 +93,7 @@ const Bridging = ({client, link, wallet}: BridgingProps) => {
 
     // complete an eth withdrawal
     async function completeWithdrawalETH() {
-        await link.completeWithdrawal({
+        await props.imxLink.completeWithdrawal({
             type: ETHTokenType.ETH,
         })
     };

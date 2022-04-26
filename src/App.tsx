@@ -7,6 +7,7 @@ import DepositNFT from "./components/DepositNFT/DepositNFT";
 import WithdrawNFT from "./components/WithdrawNFT/WithdrawNFT";
 import BatchTransfer from "./components/UploadFile/BatchTransfer";
 import {ImmutableMethodResults, ImmutableXClient, Link} from "@imtbl/imx-sdk";
+import Bridging from "./components/Bridging/Bridging";
 
 
 function App() {
@@ -38,9 +39,9 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<Home walletAddress={walletAddress} handleClick={linkSetup}/>} />
-        <Route path="/sub1" element={<DepositNFT walletAddress={walletAddress} apiClient={apiClient} imxLink={imxLink} />} />
-        <Route path="/sub2" element={<WithdrawNFT walletAddress={walletAddress} apiClient={apiClient} imxLink={imxLink} />} />
-        <Route path="/sub3" element={<BatchTransfer />} />
+          <Route path="/bridge" element={<Bridging walletAddress={walletAddress} apiClient={apiClient} imxLink={imxLink} />} />
+
+          <Route path="/sub3" element={<BatchTransfer />} />
       </Routes>
     </div>
   );

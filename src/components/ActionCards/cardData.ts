@@ -23,5 +23,12 @@ const cardData = [
     description: "Batch transfer or airdrop tokens",
     routerPath: "/sub3",
   },
+  {
+    id: 4,
+    imageString: imx,
+    actionName: "Bridge",
+    description: "Transfer Tokens between Ethereum L1 and IMX L2",
+    routerPath: "/bridge",
+  },
 ];
 export default cardData;
