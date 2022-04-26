@@ -10,6 +10,7 @@ import Bridging from "./components/Bridging/Bridging";
 function App() {
   const imxLink = new Link("https://link.ropsten.x.immutable.com");
   const [walletAddress, setWalletAddressAddress] = useState("undefined");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [balance, setBalance] =
     useState<ImmutableMethodResults.ImmutableGetBalanceResult>(Object);
   const [apiClient, setApiClient] = useState<ImmutableXClient>(Object);
