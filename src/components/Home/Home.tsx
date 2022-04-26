@@ -4,12 +4,19 @@ import cardData from "../ActionCards/cardData";
 
 import "./styles.css";
 import Button from "@mui/material/Button";
+import { ImmutableXClient, Link } from "@imtbl/imx-sdk";
 interface HomeWallet {
+  imxLink: Link;
   walletAddress: string;
+  apiClient: ImmutableXClient;
   handleClick(): Promise<void>;
 }
 
 const Home = (props: HomeWallet) => {
+  async function launchMoonpay() {
+    //TODO not available?
+    // await props.imxLink.fiatToCrypto({});
+  }
   return (
     <div>
       {props.walletAddress === "undefined" ? (
@@ -22,18 +29,28 @@ const Home = (props: HomeWallet) => {
           Connect Wallet
         </Button>
       ) : (
-        <div className="action-card-wrapper">
-          {cardData.map((data) => {
-            return (
-              <ActionAreaCard
-                key={data.id}
-                imageString={data.imageString}
-                actionName={data.actionName}
-                description={data.description}
-                routerPath={data.routerPath}
-              />
-            );
-          })}
+        <div>
+          <div className="action-card-wrapper">
+            {cardData.map((data) => {
+              return (
+                <ActionAreaCard
+                  key={data.id}
+                  imageString={data.imageString}
+                  actionName={data.actionName}
+                  description={data.description}
+                  routerPath={data.routerPath}
+                />
+              );
+            })}
+          </div>
+          <Button
+            variant="contained"
+            component="label"
+            size="small"
+            onClick={launchMoonpay}
+          >
+            Launch Moonpay
+          </Button>
         </div>
       )}
     </div>

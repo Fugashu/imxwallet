@@ -40,7 +40,12 @@ function App() {
         <Route
           path="/"
           element={
-            <Home walletAddress={walletAddress} handleClick={linkSetup} />
+            <Home
+              imxLink={imxLink}
+              walletAddress={walletAddress}
+              apiClient={apiClient}
+              handleClick={linkSetup}
+            />
           }
         />
         <Route
