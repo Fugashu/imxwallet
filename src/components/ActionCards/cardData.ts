@@ -21,7 +21,7 @@ const cardData = [
     imageString: imx,
     actionName: "Batch Transfer",
     description: "Batch transfer or airdrop tokens",
-    routerPath: "/sub3",
+    routerPath: "/batchTransfer",
   },
   {
     id: 4,

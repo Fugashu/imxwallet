@@ -15,7 +15,7 @@ const Home = (props:HomeWallet) => {
   return (
     <div>
 
-        {props.walletAddress === 'undefined' ?         <Button variant="contained" component="label" size="small" onClick={props.handleClick}>Connect Wallet</Button>
+        {props.walletAddress === 'undefined' ?<Button variant="contained" component="label" size="small" onClick={props.handleClick}>Connect Wallet</Button>
             :
       <div className="action-card-wrapper">
         {cardData.map((data) => {
