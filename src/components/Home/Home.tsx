@@ -3,25 +3,14 @@ import ActionAreaCard from "../ActionCards/ActionCards";
 import cardData from "../ActionCards/cardData";
 
 import "./styles.css";
-import Button from "@mui/material/Button";
 interface HomeWallet {
   walletAddress: string;
-  handleClick(): Promise<void>;
 }
 
 const Home = (props: HomeWallet) => {
   return (
     <div>
-      {props.walletAddress === "undefined" ? (
-        <Button
-          variant="contained"
-          component="label"
-          size="small"
-          onClick={props.handleClick}
-        >
-          Connect Wallet
-        </Button>
-      ) : (
+      {props.walletAddress === "undefined" ? null : (
         <div className="action-card-wrapper">
           {cardData.map((data) => {
             return (

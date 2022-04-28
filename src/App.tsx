@@ -1,48 +1,95 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
-
+import chainRpcData from "../src/components/BackendCalls/chainRpcData";
 import { Routes, Route } from "react-router-dom";
 import Home from "./components/Home/Home";
 import BatchTransfer from "./components/UploadFile/BatchTransfer";
-import { ImmutableMethodResults, ImmutableXClient, Link } from "@imtbl/imx-sdk";
+import { ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import Bridging from "./components/Bridging/Bridging";
+import {
+  mainnetLinkAddress,
+  mainnetApiAddress,
+  ropstenLinkAddress,
+  ropstenApiAddress,
+} from "./components/constants";
+import Header from "./components/Header/Header";
+import { CojodiNetworkSwitcher } from "./components/BackendCalls/CojodiNetworkSwitcher";
 
 function App() {
-  const imxLink = new Link("https://link.ropsten.x.immutable.com");
+  const imxLinkMainnet = new Link(mainnetLinkAddress);
+  const imxLinkRopsten = new Link(ropstenLinkAddress);
+
+  const [imxLink, setIMXLink] = useState<Link>(Object);
   const [walletAddress, setWalletAddressAddress] = useState("undefined");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [balance, setBalance] =
-    useState<ImmutableMethodResults.ImmutableGetBalanceResult>(Object);
+  const [connectedNetwork, setConnectedNetwork] = useState("undefined");
   const [apiClient, setApiClient] = useState<ImmutableXClient>(Object);
 
-  useEffect(() => {
-    buildIMX().then((r) => console.log("IMX Client built successfully"));
-  }, []);
+  // initialise an Immutable X Client to interact with apis more easily
+  const buildIMXMainnet = async () => {
+    try {
+      const publicApiUrl: string = mainnetApiAddress ?? "";
+      setApiClient(await ImmutableXClient.build({ publicApiUrl }));
+      setIMXLink(imxLinkMainnet);
+      await CojodiNetworkSwitcher.switchToChain(chainRpcData.eth_mainnet);
+      await linkSetupMainnet();
+      setConnectedNetwork("Mainnet");
+    } catch (e) {
+      console.log("Unknown Error while connecting wallet.");
+    }
+  };
+
+  // TODO refator into one function
+  /*const buildIMX = async (apiAddress: string, imxLink: Link) => {
+    try {
+      const publicApiUrl: string = ropstenApiAddress ?? "";
+      setApiClient(await ImmutableXClient.build({ publicApiUrl }));
+      setIMXLink(imxLinkRopsten);
+      await CojodiNetworkSwitcher.switchToChain(chainRpcData.ropsten);
+      await linkSetupRopsten();
+      setConnectedNetwork("Ropsten");
+    } catch (e) {
+      console.log("Unknown Error while connecting wallet.");
+    }
+  };*/
 
   // initialise an Immutable X Client to interact with apis more easily
-  async function buildIMX() {
-    const publicApiUrl: string = "https://api.ropsten.x.immutable.com/v1" ?? "";
-    setApiClient(await ImmutableXClient.build({ publicApiUrl }));
+  const buildIMXRopsten = async () => {
+    try {
+      const publicApiUrl: string = ropstenApiAddress ?? "";
+      setApiClient(await ImmutableXClient.build({ publicApiUrl }));
+      setIMXLink(imxLinkRopsten);
+      await CojodiNetworkSwitcher.switchToChain(chainRpcData.ropsten);
+      await linkSetupRopsten();
+      setConnectedNetwork("Ropsten");
+    } catch (e) {
+      console.log("Unknown Error while connecting wallet.");
+    }
+  };
+
+  // register and/or setup a user
+  async function linkSetupMainnet(): Promise<void> {
+    const res = await imxLinkMainnet.setup({});
+    setWalletAddressAddress(res.address);
+    //setBalance(await apiClient.getBalance({ user: res.address, tokenAddress: "eth" }));
   }
 
   // register and/or setup a user
-  async function linkSetup(): Promise<void> {
-    const res = await imxLink.setup({});
+  async function linkSetupRopsten(): Promise<void> {
+    const res = await imxLinkRopsten.setup({});
     setWalletAddressAddress(res.address);
-    setBalance(
-      await apiClient.getBalance({ user: res.address, tokenAddress: "eth" })
-    );
+    //setBalance(await apiClient.getBalance({ user: res.address, tokenAddress: "eth" }));
   }
 
   return (
     <div className="App">
+      <Header
+        handleClickMainnet={buildIMXMainnet}
+        handleClickRopsten={buildIMXRopsten}
+        connectedAddress={walletAddress}
+        connectedNetwork={connectedNetwork}
+      />
       <Routes>
-        <Route
-          path="/"
-          element={
-            <Home walletAddress={walletAddress} handleClick={linkSetup} />
-          }
-        />
+        <Route path="/" element={<Home walletAddress={walletAddress} />} />
         <Route
           path="/bridge"
           element={
