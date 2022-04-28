@@ -18,29 +18,31 @@ const Home = (props: HomeWallet) => {
   }
   return (
     <div>
-      <div>
-        <div className="action-card-wrapper">
-          {cardData.map((data) => {
-            return (
-              <ActionAreaCard
-                key={data.id}
-                imageString={data.imageString}
-                actionName={data.actionName}
-                description={data.description}
-                routerPath={data.routerPath}
-              />
-            );
-          })}
+      {props.walletAddress === "undefined" ? null : (
+        <div>
+          <div className="action-card-wrapper">
+            {cardData.map((data) => {
+              return (
+                <ActionAreaCard
+                  key={data.id}
+                  imageString={data.imageString}
+                  actionName={data.actionName}
+                  description={data.description}
+                  routerPath={data.routerPath}
+                />
+              );
+            })}
+          </div>
+          <Button
+            variant="contained"
+            component="label"
+            size="small"
+            onClick={launchMoonpay}
+          >
+            Launch Moonpay
+          </Button>
         </div>
-        <Button
-          variant="contained"
-          component="label"
-          size="small"
-          onClick={launchMoonpay}
-        >
-          Launch Moonpay
-        </Button>
-      </div>
+      )}
     </div>
   );
 };
