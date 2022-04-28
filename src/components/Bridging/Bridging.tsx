@@ -70,7 +70,7 @@ const Bridging = (props: BridgingProps) => {
         tokenAddress: depositTokenAddress,
       });
     } catch (e) {
-      console.log(`Error while depositing:${e}`);
+      console.log(`Error while depositing NFT:${e}`);
     }
   }
 
@@ -83,45 +83,71 @@ const Bridging = (props: BridgingProps) => {
         amount: depositAmount,
       });
     } catch (e) {
-      console.log(`Error while depositing:${e}`);
+      console.log(`Error while depositing ETH:${e}`);
     }
   }
 
   // prepare an NFT withdrawal
   async function prepareWithdrawalNFT() {
-    await props.imxLink.prepareWithdrawal({
-      type: ERC721TokenType.ERC721,
-      tokenId: prepareTokenId,
-      tokenAddress: prepareTokenAddress,
-    });
+    try {
+      await props.imxLink.prepareWithdrawal({
+        type: ERC721TokenType.ERC721,
+        tokenId: prepareTokenId,
+        tokenAddress: prepareTokenAddress,
+      });
+    } catch (e) {
+      console.log(`Error while preparing NFT withdrawal:${e}`);
+    }
   }
 
   // prepare an eth withdrawal
   async function prepareWithdrawalETH() {
-    await props.imxLink.prepareWithdrawal({
-      type: ETHTokenType.ETH,
-      amount: prepareAmount,
-    });
+    try {
+      await props.imxLink.prepareWithdrawal({
+        type: ETHTokenType.ETH,
+        amount: prepareAmount,
+      });
+    } catch (e) {
+      console.log(`Error while preparing ETH withdrawal:${e}`);
+    }
   }
 
   // complete an NFT withdrawal
   async function completeWithdrawalNFT() {
-    await props.imxLink.completeWithdrawal({
-      type: ERC721TokenType.ERC721,
-      tokenId: completeTokenId,
-      tokenAddress: completeTokenAddress,
-    });
+    try {
+      await props.imxLink.completeWithdrawal({
+        type: ERC721TokenType.ERC721,
+        tokenId: completeTokenId,
+        tokenAddress: completeTokenAddress,
+      });
+    } catch (e) {
+      console.log(`Error while completing NFT withdrawal:${e}`);
+    }
   }
 
   // complete an eth withdrawal
   async function completeWithdrawalETH() {
-    await props.imxLink.completeWithdrawal({
-      type: ETHTokenType.ETH,
-    });
+    try {
+      await props.imxLink.completeWithdrawal({
+        type: ETHTokenType.ETH,
+      });
+    } catch (e) {
+      console.log(`Error while completing ETH withdrawal:${e}`);
+    }
+  }
+
+  async function depositNoParams() {
+    try {
+      // @ts-ignore
+      await props.imxLink.deposit();
+    } catch (e) {
+      console.log(`Error while depositing:${e}`);
+    }
   }
 
   return (
     <div>
+      <button onClick={depositNoParams}>Deposit no params</button>
       <div>
         ETH:
         <br />

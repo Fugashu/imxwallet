@@ -3,14 +3,22 @@ import ActionAreaCard from "../ActionCards/ActionCards";
 import cardData from "../ActionCards/cardData";
 
 import "./styles.css";
+import Button from "@mui/material/Button";
+import { ImmutableXClient, Link } from "@imtbl/imx-sdk";
 interface HomeWallet {
+  imxLink: Link;
   walletAddress: string;
+  apiClient: ImmutableXClient;
 }
 
 const Home = (props: HomeWallet) => {
+  async function launchMoonpay() {
+    //TODO not available?
+    // await props.imxLink.fiatToCrypto({});
+  }
   return (
     <div>
-      {props.walletAddress === "undefined" ? null : (
+      <div>
         <div className="action-card-wrapper">
           {cardData.map((data) => {
             return (
@@ -24,7 +32,15 @@ const Home = (props: HomeWallet) => {
             );
           })}
         </div>
-      )}
+        <Button
+          variant="contained"
+          component="label"
+          size="small"
+          onClick={launchMoonpay}
+        >
+          Launch Moonpay
+        </Button>
+      </div>
     </div>
   );
 };

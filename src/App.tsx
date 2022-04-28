@@ -89,7 +89,16 @@ function App() {
         connectedNetwork={connectedNetwork}
       />
       <Routes>
-        <Route path="/" element={<Home walletAddress={walletAddress} />} />
+        <Route
+          path="/"
+          element={
+            <Home
+              imxLink={imxLink}
+              walletAddress={walletAddress}
+              apiClient={apiClient}
+            />
+          }
+        />
         <Route
           path="/bridge"
           element={
