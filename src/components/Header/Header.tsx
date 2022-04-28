@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "@mui/material/Button";
-
+import "./styles.css";
 interface NetworkSwitchFunctions {
   handleClickMainnet: any;
   handleClickRopsten: any;
@@ -9,31 +9,36 @@ interface NetworkSwitchFunctions {
 }
 const Header = (props: NetworkSwitchFunctions) => {
   return (
-    <div>
+    <div className="header-wrapper">
       <h1> IMX WALLET TOOLS</h1>
-      <Button
-        onClick={props.handleClickMainnet}
-        variant="contained"
-        component="label"
-        size="small"
-      >
-        Connect Mainnet
-      </Button>
+      <div className="item-wrapper">
+        <Button
+          style={{ margin: "10px" }}
+          onClick={props.handleClickMainnet}
+          variant="contained"
+          component="label"
+          size="small"
+        >
+          Connect Mainnet
+        </Button>
 
-      <Button
-        onClick={props.handleClickRopsten}
-        variant="contained"
-        component="label"
-        size="small"
-      >
-        Connect Ropsten
-      </Button>
-      {props.connectedAddress === "undefined" ? null : (
-        <h1> Connect Address:{props.connectedAddress}</h1>
-      )}
-      {props.connectedNetwork === "undefined" ? null : (
-        <h1> Active Network:{props.connectedNetwork}</h1>
-      )}
+        <Button
+          style={{ margin: "10px" }}
+          onClick={props.handleClickRopsten}
+          variant="contained"
+          component="label"
+          size="small"
+        >
+          Connect Ropsten
+        </Button>
+
+        {props.connectedAddress === "undefined" ? null : (
+          <p> Connected Address:{props.connectedAddress}</p>
+        )}
+        {props.connectedNetwork === "undefined" ? null : (
+          <p> Active Network: {props.connectedNetwork}</p>
+        )}
+      </div>
     </div>
   );
 };

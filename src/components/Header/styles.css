@@ -1,0 +1,12 @@
+.header-wrapper{
+    display: flex;
+    align-items: center;
+    margin: 20px;
+}
+.item-wrapper{
+    margin-left: auto;
+    padding: 10px;
+}
+.button-style{
+    margin: 10px;
+}
