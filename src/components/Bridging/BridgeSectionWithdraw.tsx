@@ -6,6 +6,8 @@ import {
   Link,
 } from "@imtbl/imx-sdk";
 import Button from "@mui/material/Button";
+import "./styles.css";
+import TextField from "@mui/material/TextField";
 
 interface BridgeSectionWithdrawInterface {
   imxLink: Link;
@@ -22,6 +24,7 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
   const [prepareTokenAddress, setPrepareTokenAddress] = useState("");
   const [completeTokenId, setCompleteTokenId] = useState("");
   const [completeTokenAddress, setCompleteTokenAddress] = useState("");
+
   // prepare an NFT withdrawal
   async function prepareWithdrawalNFT() {
     try {
@@ -71,121 +74,99 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
     }
   }
   return (
-    <div>
+    <div className="deposit-withdraw-section">
       <div>
-        ETH:
-        <br />
-        <br />
-        <br />
-        <br />
-        <div>
-          Prepare ETH for withdrawal (submit to be rolled up and confirmed on
-          chain in the next batch):
-          <br />
-          <label>
-            Amount (ETH):
-            <input
-              type="text"
+        <h1>Withdraw ETH:</h1>
+        <div className="deposit-withdraw-wrapper">
+          <div className="deposit-withdraw-group">
+            Prepare ETH for withdrawal:
+            <TextField
+              id="outlined-basic"
+              label="Amount (ETH):"
+              variant="outlined"
               value={prepareAmount}
               onChange={(e) => setPrepareAmount(e.target.value)}
             />
-          </label>
-          <Button
-            variant="contained"
-            component="label"
-            size="small"
-            onClick={prepareWithdrawalETH}
-          >
-            Prepare ETH Withdrawal
-          </Button>
-        </div>
-        <br />
-        <br />
-        <div>
-          Complete ETH withdrawal (withdraws entire eth balance that is ready
-          for withdrawal to L1 wallet):
-          <br />
-          <Button
-            variant="contained"
-            component="label"
-            size="small"
-            onClick={completeWithdrawalETH}
-          >
-            Complete ETH Withdrawal
-          </Button>
+            <Button
+              size="large"
+              variant="contained"
+              component="label"
+              onClick={prepareWithdrawalETH}
+            >
+              Prepare ETH Withdrawal
+            </Button>
+          </div>
+
+          <div className="deposit-withdraw-group">
+            Complete ETH withdrawal:
+            <Button
+              size="large"
+              variant="contained"
+              component="label"
+              onClick={completeWithdrawalETH}
+            >
+              Complete ETH Withdrawal
+            </Button>
+          </div>
         </div>
       </div>
-      <br />
       <div>
-        ERC721:
-        <br />
-        <br />
-        <br />
-        <br />
-        <div>
-          Prepare NFT for withdrawal (submit to be rolled up and confirmed on
-          chain in the next batch):
-          <br />
-          <label>
-            Token ID:
-            <input
-              type="text"
+        <h1>Withdraw NFT:</h1>
+        <div className="deposit-withdraw-wrapper">
+          <div className="deposit-withdraw-group">
+            Prepare NFT for withdrawal:
+            <br />
+            <TextField
+              sx={{ borderColor: "red" }}
+              id="outlined-basic"
+              label="Token ID"
+              variant="outlined"
               value={prepareTokenId}
               onChange={(e) => setPrepareTokenId(e.target.value)}
             />
-          </label>
-          <label>
-            Token Address:
-            <input
-              type="text"
+            <TextField
+              id="outlined-basic"
+              label="Token Address"
+              variant="outlined"
               value={prepareTokenAddress}
               onChange={(e) => setPrepareTokenAddress(e.target.value)}
             />
-          </label>
-          <Button
-            variant="contained"
-            component="label"
-            size="small"
-            onClick={prepareWithdrawalNFT}
-          >
-            Prepare NFT Withdrawal
-          </Button>
-        </div>
-        <br />
-        <br />
-        <div>
-          Complete NFT withdrawal (withdraws single NFT that is ready for
-          withdrawal to L1 wallet):
-          <br />
-          <label>
-            Token ID:
-            <input
-              type="text"
+            <Button
+              size="large"
+              variant="contained"
+              component="label"
+              onClick={prepareWithdrawalNFT}
+            >
+              Prepare NFT Withdrawal
+            </Button>
+          </div>
+          <div className="deposit-withdraw-group">
+            Complete NFT withdrawal:
+            <TextField
+              id="outlined-basic"
+              label="Token ID"
+              variant="outlined"
               value={completeTokenId}
               onChange={(e) => setCompleteTokenId(e.target.value)}
             />
-          </label>
-          <label>
-            Token Address:
-            <input
-              type="text"
+            <TextField
+              id="outlined-basic"
+              label="Token Address"
+              variant="outlined"
               value={completeTokenAddress}
               onChange={(e) => setCompleteTokenAddress(e.target.value)}
             />
-          </label>
-          <Button
-            variant="contained"
-            component="label"
-            size="small"
-            onClick={completeWithdrawalNFT}
-          >
-            Complete NFT Withdrawal
-          </Button>
+            <Button
+              size="large"
+              variant="contained"
+              component="label"
+              onClick={completeWithdrawalNFT}
+            >
+              Complete NFT Withdrawal
+            </Button>
+          </div>
         </div>
       </div>
-      <br />
-      <br />
-      <br />
     </div>
   );
 };

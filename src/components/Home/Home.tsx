@@ -34,9 +34,9 @@ const Home = (props: HomeWallet) => {
             })}
           </div>
           <Button
+            size="large"
             variant="contained"
             component="label"
-            size="small"
             onClick={launchMoonpay}
           >
             Launch Moonpay

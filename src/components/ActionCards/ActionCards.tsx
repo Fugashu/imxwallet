@@ -15,7 +15,7 @@ interface ActionCard {
 
 export default function ActionAreaCard(props: ActionCard) {
   return (
-    <Card sx={{ maxWidth: 150 }}>
+    <Card sx={{ maxWidth: 150 }} style={{ padding: "10px", margin: "10px" }}>
       <Link to={props.routerPath}>
         <CardActionArea>
           <CardMedia component="img" image={props.imageString} />

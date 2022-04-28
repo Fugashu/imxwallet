@@ -48,17 +48,21 @@ export default function BatchTransfer(props: ImxProps) {
         />
       }
 
-      <Button variant="contained" component="label" size="small">
+      <Button size="large" variant="contained" component="label">
         Upload File
         <input type="file" onChange={handleFileChange} hidden />
       </Button>
 
-      <Button onClick={x} variant="contained" component="label" size="small">
+      <Button size="large" onClick={x} variant="contained" component="label">
         Send ETH
       </Button>
 
       <Box marginY={3}>
-        <Button variant="contained" onClick={() => console.log("submit")}>
+        <Button
+          size="large"
+          variant="contained"
+          onClick={() => console.log("submit")}
+        >
           Submit Post{" "}
         </Button>
       </Box>

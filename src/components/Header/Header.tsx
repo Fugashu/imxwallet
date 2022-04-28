@@ -13,27 +13,27 @@ const Header = (props: NetworkSwitchFunctions) => {
       <h1> IMX WALLET TOOLS</h1>
       <div className="item-wrapper">
         <Button
+          size="large"
           style={{ margin: "10px" }}
           onClick={props.handleClickMainnet}
           variant="contained"
           component="label"
-          size="small"
         >
           Connect Mainnet
         </Button>
 
         <Button
+          size="large"
           style={{ margin: "10px" }}
           onClick={props.handleClickRopsten}
           variant="contained"
           component="label"
-          size="small"
         >
           Connect Ropsten
         </Button>
 
         {props.connectedAddress === "undefined" ? null : (
-          <p> Connected Address:{props.connectedAddress}</p>
+          <p> Connected Address: {props.connectedAddress}</p>
         )}
         {props.connectedNetwork === "undefined" ? null : (
           <p> Active Network: {props.connectedNetwork}</p>

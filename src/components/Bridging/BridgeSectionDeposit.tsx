@@ -5,12 +5,14 @@ import {
   ImmutableXClient,
   Link,
 } from "@imtbl/imx-sdk";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
+import "./styles.css";
 interface BridgeSectionDepositInterface {
   imxLink: Link;
   walletAddress: string;
   apiClient: ImmutableXClient;
 }
+
 const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
   const [depositAmount, setDepositAmount] = useState("");
   const [depositTokenId, setDepositTokenId] = useState("");
@@ -51,67 +53,63 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
   }
 
   return (
-    <div>
-      <div>
-        Deposit No Params:
-        <br />
-        <Button
-          variant="contained"
-          component="label"
-          size="small"
-          onClick={depositNoParams}
-        >
-          Deposit
-        </Button>
-      </div>
-
-      <div>
-        Deposit ETH:
-        <br />
-        <label>
-          Amount (ETH):
-          <input
-            type="text"
+    <div className="deposit-withdraw-section">
+      <h1>Deposit:</h1>
+      <div className="deposit-withdraw-wrapper">
+        <div className="deposit-withdraw-group">
+          Deposit No Params:
+          <Button
+            size="large"
+            variant="contained"
+            component="label"
+            onClick={depositNoParams}
+          >
+            Deposit
+          </Button>
+        </div>
+        <div className="deposit-withdraw-group">
+          Deposit ETH:
+          <TextField
+            id="outlined-basic"
+            label="Amount (ETH):"
+            variant="outlined"
             value={depositAmount}
             onChange={(e) => setDepositAmount(e.target.value)}
           />
-        </label>
-        <Button
-          variant="contained"
-          component="label"
-          size="small"
-          onClick={depositETH}
-        >
-          Deposit ETH
-        </Button>
-      </div>
-      <div>
-        Deposit NFT:
-        <br />
-        <label>
-          Token ID:
-          <input
-            type="text"
+          <Button
+            size="large"
+            variant="contained"
+            component="label"
+            onClick={depositETH}
+          >
+            Deposit ETH
+          </Button>
+        </div>
+        <div className="deposit-withdraw-group">
+          Deposit NFT:
+          <TextField
+            id="outlined-basic"
+            label="Token ID"
+            variant="outlined"
             value={depositTokenId}
             onChange={(e) => setDepositTokenId(e.target.value)}
           />
-        </label>
-        <label>
-          Token Address:
-          <input
-            type="text"
+          <TextField
+            id="outlined-basic"
+            label="Token Address"
+            variant="outlined"
             value={depositTokenAddress}
             onChange={(e) => setDepositTokenAddress(e.target.value)}
           />
-        </label>
-        <Button
-          variant="contained"
-          component="label"
-          size="small"
-          onClick={depositNFT}
-        >
-          Deposit NFT
-        </Button>
+          <Button
+            size="large"
+            variant="contained"
+            component="label"
+            onClick={depositNFT}
+          >
+            Deposit NFT
+          </Button>
+        </div>
       </div>
     </div>
   );
