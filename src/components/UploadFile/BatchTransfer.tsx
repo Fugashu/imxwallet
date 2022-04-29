@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
-
+import {TextField} from "@mui/material";
+import "./styles.css";
 interface PostData {
   title: string;
   body: string;
@@ -40,19 +41,29 @@ export default function BatchTransfer(props: ImxProps) {
   }
   return (
     <div className="Uploader">
-      {
-        <input
-          id="selectedFile"
-          readOnly
+        <div className="deposit-withdraw-section">
+            <h1>NFT Selection:</h1>
+        <div className="deposit-withdraw-group">
+
+      <TextField
+          id="outlined-basic"
+          label="Selected File: "
+          variant="outlined"
+          inputProps={
+            { readOnly: true, }}
+
           value={formValues.file?.name ?? "No File selected.."}
-        />
-      }
+
+      />
+
+
 
       <Button size="large" variant="contained" component="label">
         Upload File
         <input type="file" onChange={handleFileChange} hidden />
       </Button>
-
+        </div>
+        </div>
       <Button size="large" onClick={x} variant="contained" component="label">
         Send ETH
       </Button>

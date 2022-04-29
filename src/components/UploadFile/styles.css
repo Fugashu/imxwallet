@@ -1,0 +1,29 @@
+.bridge-section-wrapper{
+    display: flex;
+
+
+}
+.deposit-withdraw-wrapper{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deposit-withdraw-group{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 25px;
+    gap: 10px;
+}
+
+.deposit-withdraw-section{
+    color: #282c34;
+    font-size: 14pt;
+    margin: 10px;
+    background-color: burlywood;
+    border-radius: 50px;
+}
+
