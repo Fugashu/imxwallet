@@ -23,6 +23,22 @@ export default function BatchTransfer(props: ImxProps) {
     file: null,
   });
 
+  const [allNftData, setAllNftTokens] = useState([{token: "" , wallet: ""  }]);
+
+
+
+  const addToken = () =>{
+      setAllNftTokens([...allNftData, {token: "", wallet: ""}])
+
+  };
+
+  const removeItem  = () =>{
+   allNftData.pop();
+   setAllNftTokens([...allNftData]);
+  };
+
+
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormValues((prevFormValues) => ({
       ...prevFormValues,
@@ -39,6 +55,23 @@ export default function BatchTransfer(props: ImxProps) {
       },
     ]);
   }
+  const addTokenElement = allNftData.map(element =>
+      <div>
+      <TextField
+          id="NFT-Token"
+          label={element.token ? element.token : "NFT-Token"}
+          variant="outlined"
+
+      />
+
+
+    <TextField
+        id="Wallet-ID"
+        label={element.wallet ? element.wallet : "Wallet-ID"}
+        variant="outlined"
+    />
+
+      </div>)
   return (
     <div className="Uploader">
         <div className="deposit-withdraw-section">
@@ -63,20 +96,51 @@ export default function BatchTransfer(props: ImxProps) {
         <input type="file" onChange={handleFileChange} hidden />
       </Button>
         </div>
-        </div>
-      <Button size="large" onClick={x} variant="contained" component="label">
-        Send ETH
-      </Button>
+            <div className="NFT-Items">
 
-      <Box marginY={3}>
-        <Button
-          size="large"
-          variant="contained"
-          onClick={() => console.log("submit")}
-        >
-          Submit Post{" "}
-        </Button>
-      </Box>
+
+                {addTokenElement}
+
+                <Button
+                    size="large"
+                    variant="contained"
+                    component="label"
+                    onClick={addToken}
+                    id="AddItem"
+                >
+                    Add Item
+                </Button>
+
+                <Button
+                    size="large"
+                    variant="contained"
+                    component="label"
+                    onClick={removeItem}
+                    id="RemoveItem"
+                >
+                    Remove Item
+                </Button>
+
+            </div>
+
+            <Box marginY={3}>
+                <Button
+                    size="large"
+                    variant="contained"
+                    onClick={() => console.log("submit")}
+                >
+                    Submit Post{" "}
+                </Button>
+            </Box>
+
+
+
+        </div>
+     {/* <Button size="large" onClick={x} variant="contained" component="label">
+        Send ETH
+      </Button>*/}
+
+
     </div>
   );
 }
