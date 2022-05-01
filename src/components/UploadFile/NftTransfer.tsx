@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import {TextField} from "@mui/material";
 import "./styles.css";
+
 interface PostData {
     title: string;
     body: string;
@@ -15,7 +16,11 @@ interface ImxProps {
     apiClient: ImmutableXClient;
     imxLink: Link;
 }
-
+interface NftData{
+    token: string;
+    wallet: string;
+    count: number
+}
 export default function BatchTransfer(props: ImxProps) {
     const [formValues, setFormValues] = useState<PostData>({
         title: "",
@@ -23,19 +28,57 @@ export default function BatchTransfer(props: ImxProps) {
         file: null,
     });
 
-    const [allNftData, setAllNftTokens] = useState([{token: "" , wallet: ""  }]);
+    const [allNftData, setAllNftTokens] = useState([{token: "", wallet: "", count:0}]);
+    const [count, setCount] = useState(0)
 
 
 
     const addToken = () =>{
-        setAllNftTokens([...allNftData, {token: "", wallet: ""}])
+        setCount(count + 1)
+        setAllNftTokens([...allNftData, {token: "", wallet: "", count: count}])
 
     };
 
     const removeItem  = () =>{
+        setCount(count - 1)
         allNftData.pop();
         setAllNftTokens([...allNftData]);
     };
+
+    const handleChange =(event: React.ChangeEvent<HTMLInputElement>) =>{
+        setAllNftTokens(prevState => {
+            return{
+                ...prevState,
+                [event.target.name]: event.target.value
+            }
+        })
+        console.log(allNftData)
+    };
+
+    const addTokenElement = allNftData.map(element =>
+        <div>
+            <TextField
+                id="NFT-Token"
+                label={element.token ? element.token : "NFT-Token"}
+                onChange={handleChange}
+                name= {"token"+ element.count}
+
+                variant="outlined"
+
+            />
+
+
+            <TextField
+                id="Wallet-ID"
+                label={element.wallet ? element.wallet : "Wallet-ID"}
+                onChange={handleChange}
+                variant="outlined"
+                name= {"wallet" + element.count}
+            />
+
+        </div>)
+
+
 
 
 
@@ -46,6 +89,9 @@ export default function BatchTransfer(props: ImxProps) {
         }));
     };
 
+
+
+
     function x() {
         props.imxLink.transfer([
             {
@@ -55,24 +101,18 @@ export default function BatchTransfer(props: ImxProps) {
             },
         ]);
     }
-    const addTokenElement = allNftData.map(element =>
-        <div>
-            <TextField
-                id="NFT-Token"
-                label={element.token ? element.token : "NFT-Token"}
-                variant="outlined"
 
-            />
+    const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
+        // Preventing the page from reloading
+        event.preventDefault();
+
+        // Do something
+        console.log(allNftData);
+    }
 
 
-            <TextField
-                id="Wallet-ID"
-                label={element.wallet ? element.wallet : "Wallet-ID"}
-                variant="outlined"
-            />
-
-        </div>)
     return (
+        <form onSubmit={submitForm}>
         <div className="Uploader">
             <div className="deposit-withdraw-section">
                 <h1>NFT Selection:</h1>
@@ -127,9 +167,9 @@ export default function BatchTransfer(props: ImxProps) {
                     <Button
                         size="large"
                         variant="contained"
-                        onClick={() => console.log("submit")}
+                        type= "submit"
                     >
-                        Submit Post{" "}
+                    Submit
                     </Button>
                 </Box>
 
@@ -142,5 +182,6 @@ export default function BatchTransfer(props: ImxProps) {
 
 
         </div>
+        </form>
     );
 }

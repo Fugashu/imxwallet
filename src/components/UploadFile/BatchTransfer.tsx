@@ -19,7 +19,11 @@ export default function BatchTransfer(props: ImxProps) {
             apiClient={props.apiClient}
             imxLink={props.imxLink}
         />
-            <EthTransfer/>
+            <EthTransfer
+                walletAddress={props.walletAddress}
+                apiClient={props.apiClient}
+                imxLink={props.imxLink}
+            />
         </div>
     )
 }
