@@ -5,6 +5,7 @@ import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import {TextField} from "@mui/material";
 import "./styles.css";
 
+
 interface PostData {
     title: string;
     body: string;
@@ -16,11 +17,7 @@ interface ImxProps {
     apiClient: ImmutableXClient;
     imxLink: Link;
 }
-interface NftData{
-    token: string;
-    wallet: string;
-    count: number
-}
+
 export default function BatchTransfer(props: ImxProps) {
     const [formValues, setFormValues] = useState<PostData>({
         title: "",
@@ -28,55 +25,77 @@ export default function BatchTransfer(props: ImxProps) {
         file: null,
     });
 
-    const [allNftData, setAllNftTokens] = useState([{token: "", wallet: "", count:0}]);
-    const [count, setCount] = useState(0)
+    const [allNftData, setAllNftTokens] = useState ([{
+        token: "",
+        wallet: "",
+        key: 1
+    }]);
 
 
+    const addInput = () =>{
+        const updateData = [...allNftData, {token: "", wallet: "", key: allNftData.length + 1}]
+        setAllNftTokens(updateData)
 
-    const addToken = () =>{
-        setCount(count + 1)
-        setAllNftTokens([...allNftData, {token: "", wallet: "", count: count}])
 
     };
 
-    const removeItem  = () =>{
-        setCount(count - 1)
+    const removeInput  = () =>{
         allNftData.pop();
         setAllNftTokens([...allNftData]);
     };
 
     const handleChange =(event: React.ChangeEvent<HTMLInputElement>) =>{
-        setAllNftTokens(prevState => {
-            return{
-                ...prevState,
-                [event.target.name]: event.target.value
-            }
-        })
-        console.log(allNftData)
+
+       let updateData = [...allNftData]
+
+            for(let i= 0 ; i < updateData.length ; i++)
+            {
+                if (event.target.name === "wallet")
+                {
+                    if(event.target.id === "Wallet-ID" + updateData[i].key)
+                    {
+                        updateData[i].wallet = event.target.value
+                    }
+                }
+                else if (event.target.name === "token")
+                {
+                    if (event.target.id === "Token-ID" + updateData[i].key)
+                    {
+                        updateData[i].token = event.target.value
+                    }
+                }
+            };
+
+        setAllNftTokens(updateData)
+
     };
 
-    const addTokenElement = allNftData.map(element =>
-        <div>
+
+    const addInputElements = allNftData.map(({token,wallet,key})=>(
+        <div className="InputNFT">
             <TextField
-                id="NFT-Token"
-                label={element.token ? element.token : "NFT-Token"}
+                id={"Wallet-ID" + key}
+                label="Wallet-ID"
                 onChange={handleChange}
-                name= {"token"+ element.count}
+                name= "wallet"
 
                 variant="outlined"
 
             />
 
-
             <TextField
-                id="Wallet-ID"
-                label={element.wallet ? element.wallet : "Wallet-ID"}
+                id={"Token-ID" + key}
+                label="NFT-Token"
                 onChange={handleChange}
                 variant="outlined"
-                name= {"wallet" + element.count}
+                name= "token"
+
             />
 
-        </div>)
+        </div>
+
+    ))
+
 
 
 
@@ -139,13 +158,13 @@ export default function BatchTransfer(props: ImxProps) {
                 <div className="NFT-Items">
 
 
-                    {addTokenElement}
+                    {addInputElements}
 
                     <Button
                         size="large"
                         variant="contained"
                         component="label"
-                        onClick={addToken}
+                        onClick={addInput}
                         id="AddItem"
                     >
                         Add Item
@@ -155,7 +174,7 @@ export default function BatchTransfer(props: ImxProps) {
                         size="large"
                         variant="contained"
                         component="label"
-                        onClick={removeItem}
+                        onClick={removeInput}
                         id="RemoveItem"
                     >
                         Remove Item

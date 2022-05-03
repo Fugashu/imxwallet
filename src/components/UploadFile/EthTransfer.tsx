@@ -16,11 +16,7 @@ interface ImxProps {
     apiClient: ImmutableXClient;
     imxLink: Link;
 }
-interface NftData{
-    token: string;
-    wallet: string;
-    count: number
-}
+
 export default function EthTransfer(props: ImxProps) {
     const [formValues, setFormValues] = useState<PostData>({
         title: "",
@@ -28,55 +24,70 @@ export default function EthTransfer(props: ImxProps) {
         file: null,
     });
 
-    const [allEthData, setAllEthData] = useState([{Eth: "", wallet: "", count:0}]);
+    const [allEthData, setAllEthData] = useState([{Eth: "", wallet: "", key:1}]);
     const [count, setCount] = useState(0)
 
 
 
-    const addToken = () =>{
-        setCount(count + 1)
-        setAllEthData([...allEthData, {Eth: "", wallet: "", count: count}])
-
+    const addInput = () =>{
+        const updateDate = [...allEthData, {Eth: "", wallet: "", key: allEthData.length + 1}]
+        setAllEthData(updateDate)
     };
 
-    const removeItem  = () =>{
-        setCount(count - 1)
+    const removeInput  = () =>{
         allEthData.pop();
         setAllEthData([...allEthData]);
     };
 
     const handleChange =(event: React.ChangeEvent<HTMLInputElement>) =>{
-        setAllEthData(prevState => {
-            return{
-                ...prevState,
-                [event.target.name]: event.target.value
+
+        let updateData = [...allEthData]
+
+        for(let i= 0 ; i < updateData.length ; i++)
+        {
+            if (event.target.name === "wallet")
+            {
+                if(event.target.id === "Wallet-ID" + updateData[i].key)
+                {
+                    updateData[i].wallet = event.target.value
+                }
             }
-        })
-        console.log(allEthData)
+            else if (event.target.name === "Etherium")
+            {
+                if (event.target.id === "Etherium-ID" + updateData[i].key)
+                {
+                    updateData[i].Eth = event.target.value
+                }
+            }
+        };
+
+        setAllEthData(updateData)
+
     };
 
-    const addTokenElement = allEthData.map(element =>
-        <div>
+    const addInputElements = allEthData.map(({Eth,wallet,key})=>(
+        <div className="InputETH">
             <TextField
-                id="Etherium"
-                label={element.Eth ? element.Eth : "Etherium"}
+                id={"Wallet-ID" + key}
+                label="Wallet-ID"
                 onChange={handleChange}
-                name= {"Etherium"+ element.count}
-
+                name= "wallet"
                 variant="outlined"
 
             />
 
-
             <TextField
-                id="Wallet-ID"
-                label={element.wallet ? element.wallet : "Wallet-ID"}
+                id={"Etherium-ID" + key}
+                label="Etherium"
                 onChange={handleChange}
                 variant="outlined"
-                name= {"wallet" + element.count}
+                name= "Etherium"
+
             />
 
-        </div>)
+        </div>
+
+    ))
 
 
 
@@ -139,13 +150,13 @@ export default function EthTransfer(props: ImxProps) {
                     <div className="NFT-Items">
 
 
-                        {addTokenElement}
+                        {addInputElements}
 
                         <Button
                             size="large"
                             variant="contained"
                             component="label"
-                            onClick={addToken}
+                            onClick={addInput}
                             id="AddItem"
                         >
                             Add Item
@@ -155,7 +166,7 @@ export default function EthTransfer(props: ImxProps) {
                             size="large"
                             variant="contained"
                             component="label"
-                            onClick={removeItem}
+                            onClick={removeInput}
                             id="RemoveItem"
                         >
                             Remove Item
