@@ -1,6 +1,7 @@
 import React from "react";
 import Button from "@mui/material/Button";
 import "./styles.css";
+import githubLogo from "../../assets/png/GitHub-Mark-Light-64px.png";
 interface NetworkSwitchFunctions {
   handleClickMainnet: any;
   handleClickRopsten: any;
@@ -11,6 +12,9 @@ const Header = (props: NetworkSwitchFunctions) => {
   return (
     <div className="header-wrapper">
       <h1> IMX WALLET TOOLS</h1>
+      <a href={"https://github.com/Fugashu/imxwallet"}>
+        <img alt="github-repo" src={githubLogo} />
+      </a>
       <div className="item-wrapper">
         <Button
           size="large"
@@ -33,10 +37,12 @@ const Header = (props: NetworkSwitchFunctions) => {
         </Button>
 
         {props.connectedAddress === "undefined" ? null : (
-          <p> Connected Address: {props.connectedAddress}</p>
+          <p className="info-block">
+            Connected Address: {props.connectedAddress}
+          </p>
         )}
         {props.connectedNetwork === "undefined" ? null : (
-          <p> Active Network: {props.connectedNetwork}</p>
+          <p className="info-block">Active Network: {props.connectedNetwork}</p>
         )}
       </div>
     </div>

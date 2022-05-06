@@ -14,7 +14,6 @@ import {
 } from "./components/constants";
 import Header from "./components/Header/Header";
 import { CojodiNetworkSwitcher } from "./components/BackendCalls/CojodiNetworkSwitcher";
-import SingleAssetTransfer from "./components/SingleAssetTransfer/SingleAssetTransfer";
 
 function App() {
   const imxLinkMainnet = new Link(mainnetLinkAddress);
@@ -120,7 +119,6 @@ function App() {
             />
           }
         />
-        <Route path="/singleAssetTransfer" element={<SingleAssetTransfer />} />
       </Routes>
     </div>
   );

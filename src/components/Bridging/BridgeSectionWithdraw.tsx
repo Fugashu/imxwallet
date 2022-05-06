@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import {
   ERC721TokenType,
   ETHTokenType,
+  ImmutableMethodResults,
+  ImmutableRollupStatus,
   ImmutableXClient,
   Link,
 } from "@imtbl/imx-sdk";
 import Button from "@mui/material/Button";
 import "./styles.css";
 import TextField from "@mui/material/TextField";
+import axios from "axios";
+import { ropstenInventoryEndpoint } from "../constants";
 
 interface BridgeSectionWithdrawInterface {
   imxLink: Link;
@@ -15,23 +19,44 @@ interface BridgeSectionWithdrawInterface {
   apiClient: ImmutableXClient;
 }
 const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
-  // eth
-  const [prepareAmount, setPrepareAmount] = useState("");
-
-  // nft
-
-  const [prepareTokenId, setPrepareTokenId] = useState("");
-  const [prepareTokenAddress, setPrepareTokenAddress] = useState("");
+  const [prepareETHAmount, setPrepareETHAmount] = useState("");
   const [completeTokenId, setCompleteTokenId] = useState("");
   const [completeTokenAddress, setCompleteTokenAddress] = useState("");
+  const [collectionAddress, setCollectionAddress] = useState("");
+  const [collectionName, setCollectionName] = useState("");
+  const [collectionImage, setCollectionImage] = useState("");
+  const [inventory, setInventory] = useState([]);
+  const [readyForWithdrawalInventory, setReadForWithdrawalInventory] = useState(
+    []
+  );
+  async function reloadWithdrawals(): Promise<void> {
+    // included in batch awaiting confirmation
+    setReadyWithdrawals(
+      await props.apiClient.getWithdrawals({
+        user: props.walletAddress,
+        rollup_status: ImmutableRollupStatus.confirmed,
+        withdrawn_to_wallet: false,
+      })
+    ); // confirmed on-chain in a batch and ready to be withdrawn
+    setCompletedWithdrawals(
+      await props.apiClient.getWithdrawals({
+        user: props.walletAddress,
+        withdrawn_to_wallet: true,
+      })
+    ); // confirmed on-chain in a batch and already withdrawn to L1 wallet
+  }
 
-  // prepare an NFT withdrawal
-  async function prepareWithdrawalNFT() {
+  const [readyWithdrawals, setReadyWithdrawals] =
+    useState<ImmutableMethodResults.ImmutableGetWithdrawalsResult>(Object);
+  const [completedWithdrawals, setCompletedWithdrawals] =
+    useState<ImmutableMethodResults.ImmutableGetWithdrawalsResult>(Object);
+
+  async function prepareWithdrawalNFT(tokenId: string) {
     try {
       await props.imxLink.prepareWithdrawal({
         type: ERC721TokenType.ERC721,
-        tokenId: prepareTokenId,
-        tokenAddress: prepareTokenAddress,
+        tokenId: tokenId,
+        tokenAddress: collectionAddress,
       });
     } catch (e) {
       console.log(`Error while preparing NFT withdrawal:${e}`);
@@ -43,23 +68,10 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
     try {
       await props.imxLink.prepareWithdrawal({
         type: ETHTokenType.ETH,
-        amount: prepareAmount,
+        amount: prepareETHAmount,
       });
     } catch (e) {
       console.log(`Error while preparing ETH withdrawal:${e}`);
-    }
-  }
-
-  // complete an NFT withdrawal
-  async function completeWithdrawalNFT() {
-    try {
-      await props.imxLink.completeWithdrawal({
-        type: ERC721TokenType.ERC721,
-        tokenId: completeTokenId,
-        tokenAddress: completeTokenAddress,
-      });
-    } catch (e) {
-      console.log(`Error while completing NFT withdrawal:${e}`);
     }
   }
 
@@ -73,10 +85,27 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
       console.log(`Error while completing ETH withdrawal:${e}`);
     }
   }
+
+  async function fetchInventoryIMX() {
+    const result = await axios(
+      ropstenInventoryEndpoint +
+        "collection=" +
+        collectionAddress +
+        "&user=" +
+        props.walletAddress +
+        "&status=" +
+        "imx"
+    );
+    console.log(result.data.result);
+    const nftArray = result.data.result;
+    setCollectionName(nftArray[0]["collection"]["name"]);
+    setCollectionImage(nftArray[0]["collection"]["icon_url"]);
+    setInventory(nftArray);
+  }
   return (
     <div className="deposit-withdraw-section">
       <div>
-        <h1>Withdraw ETH:</h1>
+        <h1>Prepare ETH Withdrawal ETH:</h1>
         <div className="deposit-withdraw-wrapper">
           <div className="deposit-withdraw-group">
             Prepare ETH for withdrawal:
@@ -84,8 +113,8 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
               id="outlined-basic"
               label="Amount (ETH):"
               variant="outlined"
-              value={prepareAmount}
-              onChange={(e) => setPrepareAmount(e.target.value)}
+              value={prepareETHAmount}
+              onChange={(e) => setPrepareETHAmount(e.target.value)}
             />
             <Button
               size="large"
@@ -110,60 +139,66 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
           </div>
         </div>
       </div>
-      <div>
-        <h1>Withdraw NFT:</h1>
-        <div className="deposit-withdraw-wrapper">
-          <div className="deposit-withdraw-group">
-            Prepare NFT for withdrawal:
-            <br />
-            <TextField
-              sx={{ borderColor: "red" }}
-              id="outlined-basic"
-              label="Token ID"
-              variant="outlined"
-              value={prepareTokenId}
-              onChange={(e) => setPrepareTokenId(e.target.value)}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Token Address"
-              variant="outlined"
-              value={prepareTokenAddress}
-              onChange={(e) => setPrepareTokenAddress(e.target.value)}
-            />
-            <Button
-              size="large"
-              variant="contained"
-              component="label"
-              onClick={prepareWithdrawalNFT}
-            >
-              Prepare NFT Withdrawal
-            </Button>
+      <div className="deposit-withdraw-section">
+        <div>
+          <h1>Prepare NFT Withdrawal:</h1>
+          <div className="deposit-withdraw-wrapper">
+            <div className="deposit-withdraw-group">
+              Collection address you want to withdraw/deposit NFTs:
+              <TextField
+                id="outlined-basic"
+                label="Collection Address:"
+                variant="outlined"
+                value={collectionAddress}
+                onChange={(e) => setCollectionAddress(e.target.value)}
+              />
+              <Button
+                size="large"
+                variant="contained"
+                component="label"
+                onClick={fetchInventoryIMX}
+              >
+                Fetch Inventory
+              </Button>
+            </div>
+            <div className="deposit-withdraw-group">
+              {collectionImage ? (
+                <div>
+                  <img
+                    alt="collection-img"
+                    style={{ width: "200px", height: "auto" }}
+                    src={collectionImage}
+                  />
+                  <p>{collectionName}</p>
+                </div>
+              ) : null}
+            </div>
           </div>
-          <div className="deposit-withdraw-group">
-            Complete NFT withdrawal:
-            <TextField
-              id="outlined-basic"
-              label="Token ID"
-              variant="outlined"
-              value={completeTokenId}
-              onChange={(e) => setCompleteTokenId(e.target.value)}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Token Address"
-              variant="outlined"
-              value={completeTokenAddress}
-              onChange={(e) => setCompleteTokenAddress(e.target.value)}
-            />
-            <Button
-              size="large"
-              variant="contained"
-              component="label"
-              onClick={completeWithdrawalNFT}
-            >
-              Complete NFT Withdrawal
-            </Button>
+        </div>
+
+        <div>
+          {collectionName ? <h1>Your NFTs from {collectionName}:</h1> : null}
+          <div className="deposit-withdraw-wrapper">
+            <div className="inventory-wrapper">
+              {inventory.map((item) => (
+                <div key={item["id"]} className="inventory-item">
+                  <img
+                    style={{ width: "250px", height: "auto" }}
+                    src={item["image_url"]}
+                    alt={item["image_url"]}
+                  />
+                  <p>Token ID: {item["token_id"]}</p>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    component="label"
+                    onClick={() => prepareWithdrawalNFT(item["token_id"])}
+                  >
+                    Prepare Withdrawal
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
