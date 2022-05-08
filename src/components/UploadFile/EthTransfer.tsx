@@ -4,6 +4,8 @@ import Button from "@mui/material/Button";
 import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import {TextField} from "@mui/material";
 import "./styles.css";
+import Papa from "papaparse";
+
 
 interface PostData {
     title: string;
@@ -25,7 +27,6 @@ export default function EthTransfer(props: ImxProps) {
     });
 
     const [allEthData, setAllEthData] = useState([{Eth: "", wallet: "", key:1}]);
-    const [count, setCount] = useState(0)
 
 
 
@@ -62,7 +63,7 @@ export default function EthTransfer(props: ImxProps) {
         };
 
         setAllEthData(updateData)
-
+        console.log(allEthData)
     };
 
     const addInputElements = allEthData.map(({Eth,wallet,key})=>(
@@ -73,6 +74,7 @@ export default function EthTransfer(props: ImxProps) {
                 onChange={handleChange}
                 name= "wallet"
                 variant="outlined"
+                value={wallet === "" ? "": wallet}
 
             />
 
@@ -82,6 +84,7 @@ export default function EthTransfer(props: ImxProps) {
                 onChange={handleChange}
                 variant="outlined"
                 name= "Etherium"
+                value={Eth === "" ? "": Eth}
 
             />
 
@@ -94,6 +97,22 @@ export default function EthTransfer(props: ImxProps) {
 
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        // @ts-ignore
+        Papa.parse(event.target.files[0], {
+            header: true,
+            skipEmptyLines: true,
+            complete: results => {
+
+
+                // @ts-ignore
+                let data = results.data.map((d, key) => ({wallet: d.wallet, Eth: d.Eth, key:key}))
+                // @ts-ignore
+
+                setAllEthData(data)
+
+
+            },
+        });
         setFormValues((prevFormValues) => ({
             ...prevFormValues,
             file: event.target.files ? event.target.files[0] : null,
@@ -144,7 +163,7 @@ export default function EthTransfer(props: ImxProps) {
 
                         <Button size="large" variant="contained" component="label">
                             Upload File
-                            <input type="file" onChange={handleFileChange} hidden />
+                            <input type="file" onChange={handleFileChange} accept=".csv" hidden />
                         </Button>
                     </div>
                     <div className="NFT-Items">

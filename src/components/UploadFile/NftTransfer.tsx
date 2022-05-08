@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Papa from "papaparse";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
@@ -67,6 +68,7 @@ export default function BatchTransfer(props: ImxProps) {
             };
 
         setAllNftTokens(updateData)
+        console.log(allNftData)
 
     };
 
@@ -78,7 +80,7 @@ export default function BatchTransfer(props: ImxProps) {
                 label="Wallet-ID"
                 onChange={handleChange}
                 name= "wallet"
-
+                value={wallet === "" ? "": wallet}
                 variant="outlined"
 
             />
@@ -89,6 +91,7 @@ export default function BatchTransfer(props: ImxProps) {
                 onChange={handleChange}
                 variant="outlined"
                 name= "token"
+                value={token === "" ? "": token}
 
             />
 
@@ -96,21 +99,31 @@ export default function BatchTransfer(props: ImxProps) {
 
     ))
 
-
-
-
-
-
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFormValues((prevFormValues) => ({
+        // @ts-ignore
+        Papa.parse(event.target.files[0], {
+            header: true,
+            skipEmptyLines: true,
+            complete: results => {
+                // @ts-ignore
+
+                // @ts-ignore
+                let data = results.data.map((d, key) => ({wallet: d.wallet, token: d.token, key:key}))
+                // @ts-ignore
+
+                setAllNftTokens(data)
+
+
+            },
+        });
+
+                setFormValues((prevFormValues) => ({
             ...prevFormValues,
             file: event.target.files ? event.target.files[0] : null,
         }));
     };
 
-
-
-
+    console.log(allNftData)
     function x() {
         props.imxLink.transfer([
             {
@@ -143,16 +156,12 @@ export default function BatchTransfer(props: ImxProps) {
                         variant="outlined"
                         inputProps={
                             { readOnly: true, }}
-
                         value={formValues.file?.name ?? "No File selected.."}
-
                     />
-
-
 
                     <Button size="large" variant="contained" component="label">
                         Upload File
-                        <input type="file" onChange={handleFileChange} hidden />
+                        <input type="file" onChange={handleFileChange} accept=".csv" hidden />
                     </Button>
                 </div>
                 <div className="NFT-Items">
