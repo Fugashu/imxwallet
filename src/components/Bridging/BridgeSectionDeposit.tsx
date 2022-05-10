@@ -109,7 +109,7 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
         </div>
       </div>
       <div>
-        <h1>Withdraw NFT:</h1>
+        <h1>Deposit NFT:</h1>
         <div className="deposit-withdraw-wrapper">
           <div className="deposit-withdraw-group">
             Collection address you want to withdraw/deposit NFTs:
