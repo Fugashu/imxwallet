@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
+import {ETHTokenType, ImmutableXClient, Link} from "@imtbl/imx-sdk";
 import {TextField} from "@mui/material";
 import "./styles.css";
 import Papa from "papaparse";
@@ -27,8 +27,6 @@ export default function EthTransfer(props: ImxProps) {
     });
 
     const [allEthData, setAllEthData] = useState([{Eth: "", wallet: "", key:1}]);
-
-
 
     const addInput = () =>{
         const updateDate = [...allEthData, {Eth: "", wallet: "", key: allEthData.length + 1}]
@@ -60,10 +58,10 @@ export default function EthTransfer(props: ImxProps) {
                     updateData[i].Eth = event.target.value
                 }
             }
-        };
+        }
 
         setAllEthData(updateData)
-        console.log(allEthData)
+
     };
 
     const addInputElements = allEthData.map(({Eth,wallet,key})=>(
@@ -91,11 +89,6 @@ export default function EthTransfer(props: ImxProps) {
         </div>
 
     ))
-
-
-
-
-
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         // @ts-ignore
         Papa.parse(event.target.files[0], {
@@ -122,24 +115,34 @@ export default function EthTransfer(props: ImxProps) {
 
 
 
-    function x() {
-        props.imxLink.transfer([
-            {
-                amount: "0.1",
+    function transferEth() {
+       let process = allEthData.map(element =>{
+
+            props.imxLink.transfer([{
+                // @ts-ignore
+                amount: element.Eth,
                 type: ETHTokenType.ETH,
-                toAddress: "0x886cb3FD2bA9ffC69b98F8740279c723cbCAd230",
+                // @ts-ignore
+                toAdress: element.wallet,
+            }])
+        })
+      /*  props.imxLink.transfer([
+            {
+
+                amount: "0.01",
+                type: ETHTokenType.ETH,
+                toAddress: "0xC4d5a9e58CAbcA03d4aaF3ded94467F38CDE9b38",
             },
-        ]);
+        ]);*/
+        console.log(process)
     }
 
     const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
         // Preventing the page from reloading
         event.preventDefault();
 
-        // Do something
-        console.log(allEthData);
+        transferEth();
     }
-
 
     return (
         <form onSubmit={submitForm}>
@@ -154,12 +157,8 @@ export default function EthTransfer(props: ImxProps) {
                             variant="outlined"
                             inputProps={
                                 { readOnly: true, }}
-
                             value={formValues.file?.name ?? "No File selected.."}
-
                         />
-
-
 
                         <Button size="large" variant="contained" component="label">
                             Upload File
@@ -198,6 +197,7 @@ export default function EthTransfer(props: ImxProps) {
                             size="large"
                             variant="contained"
                             type= "submit"
+
                         >
                             Submit
                         </Button>
@@ -206,10 +206,6 @@ export default function EthTransfer(props: ImxProps) {
 
 
                 </div>
-                {/* <Button size="large" onClick={x} variant="contained" component="label">
-        Send ETH
-      </Button>*/}
-
 
             </div>
         </form>

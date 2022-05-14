@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Papa from "papaparse";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
+import {ERC721TokenType, ETHTokenType, ImmutableXClient, Link} from "@imtbl/imx-sdk";
 import {TextField} from "@mui/material";
 import "./styles.css";
 
@@ -29,12 +29,13 @@ export default function BatchTransfer(props: ImxProps) {
     const [allNftData, setAllNftTokens] = useState ([{
         token: "",
         wallet: "",
+        contract: "",
         key: 1
     }]);
 
 
     const addInput = () =>{
-        const updateData = [...allNftData, {token: "", wallet: "", key: allNftData.length + 1}]
+        const updateData = [...allNftData, {token: "", wallet: "", contract: "", key: allNftData.length + 1}]
         setAllNftTokens(updateData)
 
 
@@ -65,15 +66,22 @@ export default function BatchTransfer(props: ImxProps) {
                         updateData[i].token = event.target.value
                     }
                 }
+                else if (event.target.name === "contract")
+                {
+                    if (event.target.id === "Contract-ID" + updateData[i].key)
+                    {
+                        updateData[i].contract = event.target.value
+                    }
+                }
             };
 
         setAllNftTokens(updateData)
-        console.log(allNftData)
+
 
     };
 
 
-    const addInputElements = allNftData.map(({token,wallet,key})=>(
+    const addInputElements = allNftData.map(({token,wallet,key, contract})=>(
         <div className="InputNFT">
             <TextField
                 id={"Wallet-ID" + key}
@@ -95,6 +103,16 @@ export default function BatchTransfer(props: ImxProps) {
 
             />
 
+            <TextField
+                id={"Contract-ID" + key}
+                label="Contract-ID"
+                onChange={handleChange}
+                variant="outlined"
+                name= "contract"
+                value={contract === "" ? "": contract}
+
+            />
+
         </div>
 
     ))
@@ -106,12 +124,11 @@ export default function BatchTransfer(props: ImxProps) {
             skipEmptyLines: true,
             complete: results => {
                 // @ts-ignore
-
-                // @ts-ignore
-                let data = results.data.map((d, key) => ({wallet: d.wallet, token: d.token, key:key}))
+                let data = results.data.map((d, key) => ({wallet: d.wallet, token: d.token, contract: d.contract, key:key}))
                 // @ts-ignore
 
                 setAllNftTokens(data)
+                console.log(data)
 
 
             },
@@ -123,15 +140,21 @@ export default function BatchTransfer(props: ImxProps) {
         }));
     };
 
-    console.log(allNftData)
-    function x() {
-        props.imxLink.transfer([
-            {
-                amount: "0.1",
-                type: ETHTokenType.ETH,
-                toAddress: "0x886cb3FD2bA9ffC69b98F8740279c723cbCAd230",
+
+    function batchNftTransfer() {
+
+        allNftData.map(element =>{
+
+            props.imxLink.transfer([{
+                type: ERC721TokenType.ERC721, // Must be of type ERC721
+                tokenId: element.token, // the token ID
+                tokenAddress: element.contract, // the collection address / contract address this token belongs to
+                toAddress: element.wallet, // the wallet address this token is being transferred to
             },
-        ]);
+
+            ])
+        })
+
     }
 
     const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
@@ -139,6 +162,7 @@ export default function BatchTransfer(props: ImxProps) {
         event.preventDefault();
 
         // Do something
+        batchNftTransfer();
         console.log(allNftData);
     }
 
@@ -204,9 +228,9 @@ export default function BatchTransfer(props: ImxProps) {
 
 
             </div>
-            {/* <Button size="large" onClick={x} variant="contained" component="label">
+          {/*  { <Button size="large" onClick={x} variant="contained" component="label">
         Send ETH
-      </Button>*/}
+      </Button>}*/}
 
 
         </div>
