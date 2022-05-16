@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
+  ERC20TokenType,
   ERC721TokenType,
+  ETHTokenType,
   ImmutableMethodResults,
   ImmutableRollupStatus,
   ImmutableXClient,
@@ -14,6 +16,7 @@ import {
   ropstenInventoryEndpoint,
   ropstenWithdrawalEndpoint,
 } from "../constants";
+import { ethers } from "ethers";
 
 interface BridgeSectionWithdrawalStatusInterface {
   imxLink: Link;
@@ -23,7 +26,7 @@ interface BridgeSectionWithdrawalStatusInterface {
 const BridgeSectionWithdrawalStatus = (
   props: BridgeSectionWithdrawalStatusInterface
 ) => {
-  const [readyToWithdrawInventory, setReadToWithdrawInventory] = useState([]);
+  const [readyToWithdrawInventory, setReadyToWithdrawInventory] = useState([]);
   const [preparationInventory, setPreparationInventory] = useState([]);
 
   async function loadWithdrawals() {
@@ -40,20 +43,23 @@ const BridgeSectionWithdrawalStatus = (
     console.log(result.data.result);
     let res = result.data.result;
 
-    //todo hier wieter machen
-    res["imgurl"] = 4;
+    await res.map(async (item: any) => {
+      let url = await getImageForItem(
+        item["token"]["data"]["token_address"],
+        item["token"]["data"]["token_id"]
+      );
 
-    await res.map(
-      async (item: { [x: string]: { [x: string]: { [x: string]: string } } }) =>
-        console.log(
-          await getImageForItem(
-            item["token"]["data"]["token_address"],
-            item["token"]["data"]["token_id"]
-          )
-        )
-    );
+      return (item["imgUrl"] = url);
+    });
 
-    setReadToWithdrawInventory(res);
+    // const erc721Tokens = res.filter(
+    //   (element: any) => element["token"]["type"] === "ERC721"
+    // );
+    // const erc20Tokens = res.filter(
+    //   (element: any) => element["token"]["type"] === "ERC20"
+    // );
+    console.log(res);
+    setReadyToWithdrawInventory(res);
 
     result = await axios(
       ropstenWithdrawalEndpoint +
@@ -75,6 +81,7 @@ const BridgeSectionWithdrawalStatus = (
     let result = await axios(query);
     return result.data.image_url;
   }
+
   // complete an NFT withdrawal
   async function completeWithdrawalNFT(tokenId: string, tokenAddress: string) {
     try {
@@ -85,6 +92,19 @@ const BridgeSectionWithdrawalStatus = (
       });
     } catch (e) {
       console.log(`Error while completing NFT withdrawal:${e}`);
+    }
+  }
+  // complete an Erc20 withdrawal
+  async function completeWithdrawalErc20(symbol: string, tokenAddress: string) {
+    console.log("trying to complete eth withdrawal ");
+    try {
+      await props.imxLink.completeWithdrawal({
+        symbol: "",
+        tokenAddress: tokenAddress,
+        type: ERC20TokenType.ERC20,
+      });
+    } catch (e) {
+      console.log(`Error while completing ERC20 withdrawal:${e}`);
     }
   }
 
@@ -114,7 +134,7 @@ const BridgeSectionWithdrawalStatus = (
                     >
                       <img
                         style={{ width: "250px", height: "auto" }}
-                        src={""}
+                        src={item["imgUrl"]}
                         alt={""}
                       />
 
@@ -142,25 +162,36 @@ const BridgeSectionWithdrawalStatus = (
                     >
                       <img
                         style={{ width: "250px", height: "auto" }}
-                        src={""}
+                        src={item["imgUrl"]}
                         alt={""}
                       />
 
                       <p>
-                        Token ID:
-                        {item["token"]["data"]["token_id"]}
+                        {
+                          //fixme token symbol
+                          item["token"]["type"] === "ERC721"
+                            ? `Token ID: ${item["token"]["data"]["token_id"]}`
+                            : `${ethers.utils.formatEther(
+                                item["token"]["data"]["quantity"]
+                              )} ERC20 `
+                        }
                       </p>
                       <Button
                         size="small"
                         variant="contained"
                         component="label"
-                        onClick={() =>
-                          completeWithdrawalNFT(
-                            item["token"]["data"]["token_id"],
+                        onClick={() => {
+                          item["token"]["type"] === "ERC721"
+                            ? completeWithdrawalNFT(
+                                item["token"]["data"]["token_id"],
 
-                            item["token"]["data"]["token_address"]
-                          )
-                        }
+                                item["token"]["data"]["token_address"]
+                              )
+                            : completeWithdrawalErc20(
+                                item["token"]["data"]["token_address"],
+                                item["token"]["data"]["token_address"]
+                              );
+                        }}
                       >
                         Complete Withdrawal
                       </Button>
