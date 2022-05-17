@@ -56,7 +56,7 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
     }
   }
   async function fetchInventoryETH() {
-    const result = await axios(
+    await axios(
       ropstenInventoryEndpoint +
         "collection=" +
         collectionAddress +
@@ -64,21 +64,31 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
         props.walletAddress +
         "&status=" +
         "eth"
-    );
-    console.log(result.data.result);
-    const nftArray = result.data.result;
-    setCollectionName(nftArray[0]["collection"]["name"]);
-    setCollectionImage(nftArray[0]["collection"]["icon_url"]);
-    setInventory(nftArray);
+    )
+      .catch((reason) => {
+        alert("Collection was not found");
+      })
+      .then((value) => {
+        console.log(value?.data.result);
+        const nftArray = value?.data.result;
+        if (nftArray.length === 0) {
+          alert(
+            "The collection address was either wrong or you do not own IMX NFTs of this collection."
+          );
+          return;
+        }
+        setCollectionName(nftArray[0]["collection"]["name"]);
+        setCollectionImage(nftArray[0]["collection"]["icon_url"]);
+        setInventory(nftArray);
+      });
   }
 
   return (
     <div className="deposit-withdraw-section">
       <div>
-        <h1>Deposit Tokens & ETH:</h1>
+        <h1>Deposit ERC20:</h1>
         <div className="deposit-withdraw-wrapper">
           <div className="deposit-withdraw-group">
-            Deposit No Params:
             <Button
               size="large"
               variant="contained"
@@ -88,6 +98,7 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
               Deposit
             </Button>
           </div>
+          {/*
           <div className="deposit-withdraw-group">
             Deposit ETH:
             <TextField
@@ -105,7 +116,7 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
             >
               Deposit ETH
             </Button>
-          </div>
+          </div>*/}
         </div>
       </div>
       <div>

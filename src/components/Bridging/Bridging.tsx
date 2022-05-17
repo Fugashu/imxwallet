@@ -17,7 +17,7 @@ interface BridgingProps {
   walletAddress: string;
   apiClient: ImmutableXClient;
 }
-
+//fixme different api endpoints for mainnet and ropsten
 const Bridging = (props: BridgingProps) => {
   return (
     <div>

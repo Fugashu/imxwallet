@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  ERC20TokenType,
   ERC721TokenType,
   ETHTokenType,
   ImmutableMethodResults,
@@ -12,6 +13,7 @@ import "./styles.css";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { ropstenInventoryEndpoint } from "../constants";
+import { getSymbolForToken } from "./BackendCalls";
 
 interface BridgeSectionWithdrawInterface {
   imxLink: Link;
@@ -20,6 +22,9 @@ interface BridgeSectionWithdrawInterface {
 }
 const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
   const [prepareETHAmount, setPrepareETHAmount] = useState("");
+  const [prepareERC20Amount, setPrepareERC20Amount] = useState("");
+  const [prepareERC20TokenAddr, setPrepareERC20TokenAddr] = useState("");
+
   const [completeTokenId, setCompleteTokenId] = useState("");
   const [completeTokenAddress, setCompleteTokenAddress] = useState("");
   const [collectionAddress, setCollectionAddress] = useState("");
@@ -75,6 +80,18 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
     }
   }
 
+  async function prepareWithdrawalERC20() {
+    const response = await props.imxLink.prepareWithdrawal({
+      type: ERC20TokenType.ERC20,
+      tokenAddress: prepareERC20TokenAddr,
+      symbol: await getSymbolForToken(prepareERC20TokenAddr),
+      amount: prepareERC20Amount, //The amount of the token to withdraw
+    });
+
+    console.log(response);
+    // returns { withdrawalId: 123456 }
+  }
+
   // complete an eth withdrawal
   async function completeWithdrawalETH() {
     try {
@@ -87,7 +104,7 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
   }
 
   async function fetchInventoryIMX() {
-    const result = await axios(
+    await axios(
       ropstenInventoryEndpoint +
         "collection=" +
         collectionAddress +
@@ -95,12 +112,23 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
         props.walletAddress +
         "&status=" +
         "imx"
-    );
-    console.log(result.data.result);
-    const nftArray = result.data.result;
-    setCollectionName(nftArray[0]["collection"]["name"]);
-    setCollectionImage(nftArray[0]["collection"]["icon_url"]);
-    setInventory(nftArray);
+    )
+      .catch((reason) => {
+        alert("Collection was not found");
+      })
+      .then((value) => {
+        console.log(value?.data.result);
+        const nftArray = value?.data.result;
+        if (nftArray.length === 0) {
+          alert(
+            "The collection address was either wrong or you do not own IMX NFTs of this collection."
+          );
+          return;
+        }
+        setCollectionName(nftArray[0]["collection"]["name"]);
+        setCollectionImage(nftArray[0]["collection"]["icon_url"]);
+        setInventory(nftArray);
+      });
   }
   return (
     <div className="deposit-withdraw-section">
@@ -126,6 +154,31 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
             </Button>
           </div>
 
+          <div className="deposit-withdraw-group">
+            Prepare ERC20 for withdrawal:
+            <TextField
+              id="outlined-basic"
+              label="Amount:"
+              variant="outlined"
+              value={prepareERC20Amount}
+              onChange={(e) => setPrepareERC20Amount(e.target.value)}
+            />
+            <TextField
+              id="outlined-basic"
+              label="Token Address:"
+              variant="outlined"
+              value={prepareERC20TokenAddr}
+              onChange={(e) => setPrepareERC20TokenAddr(e.target.value)}
+            />
+            <Button
+              size="large"
+              variant="contained"
+              component="label"
+              onClick={prepareWithdrawalETH}
+            >
+              Prepare ERC20 Withdrawal
+            </Button>
+          </div>
           <div className="deposit-withdraw-group">
             Complete ETH withdrawal:
             <Button

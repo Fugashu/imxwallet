@@ -51,6 +51,13 @@ const BridgeSectionWithdrawalStatus = (
 
       return (item["imgUrl"] = url);
     });
+    await res.map(async (item: any) => {
+      let symbol = await getSymbolForToken(
+        item["token"]["data"]["token_address"]
+      );
+
+      return (item["symbol"] = symbol ? symbol : "ETH");
+    });
 
     // const erc721Tokens = res.filter(
     //   (element: any) => element["token"]["type"] === "ERC721"
@@ -73,6 +80,7 @@ const BridgeSectionWithdrawalStatus = (
 
     console.log(result.data.result);
     res = result.data.result;
+
     setPreparationInventory(res);
   }
 
@@ -97,6 +105,17 @@ const BridgeSectionWithdrawalStatus = (
   // complete an Erc20 withdrawal
   async function completeWithdrawalErc20(symbol: string, tokenAddress: string) {
     console.log("trying to complete eth withdrawal ");
+    if (tokenAddress === "") {
+      try {
+        await props.imxLink.completeWithdrawal({
+          type: ETHTokenType.ETH,
+        });
+      } catch (e) {
+        console.log(`Error while completing ERC20 withdrawal:${e}`);
+      }
+      return;
+    }
+
     try {
       await props.imxLink.completeWithdrawal({
         symbol: "",
@@ -106,6 +125,12 @@ const BridgeSectionWithdrawalStatus = (
     } catch (e) {
       console.log(`Error while completing ERC20 withdrawal:${e}`);
     }
+  }
+
+  async function getSymbolForToken(address: string) {
+    let query = ropstenApiAddress + "/tokens/" + address;
+    let result = await axios(query);
+    return result.data.symbol;
   }
 
   return (
@@ -129,7 +154,10 @@ const BridgeSectionWithdrawalStatus = (
                 <div className="inventory-wrapper">
                   {preparationInventory.map((item) => (
                     <div
-                      key={item["token"]["data"]["token_id"]}
+                      key={
+                        item["token"]["data"]["token_address"] +
+                        item["token"]["data"]["token_id"]
+                      }
                       className="inventory-item"
                     >
                       <img
@@ -151,13 +179,16 @@ const BridgeSectionWithdrawalStatus = (
 
           {readyToWithdrawInventory.length !== 0 ? (
             <div>
-              <h1>Complete NFT Withdrawal:</h1>
+              <h1>Complete Withdrawal:</h1>
 
               <div className="deposit-withdraw-wrapper">
                 <div className="inventory-wrapper">
                   {readyToWithdrawInventory.map((item) => (
                     <div
-                      key={item["token"]["data"]["token_id"]}
+                      key={
+                        item["token"]["data"]["token_address"] +
+                        item["token"]["data"]["token_id"]
+                      }
                       className="inventory-item"
                     >
                       <img
@@ -173,7 +204,7 @@ const BridgeSectionWithdrawalStatus = (
                             ? `Token ID: ${item["token"]["data"]["token_id"]}`
                             : `${ethers.utils.formatEther(
                                 item["token"]["data"]["quantity"]
-                              )} ERC20 `
+                              )} ${item["symbol"]}`
                         }
                       </p>
                       <Button
