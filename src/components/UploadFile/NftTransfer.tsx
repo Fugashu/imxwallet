@@ -20,30 +20,32 @@ interface ImxProps {
 }
 
 export default function BatchTransfer(props: ImxProps) {
+
     const [formValues, setFormValues] = useState<PostData>({
         title: "",
         body: "",
         file: null,
     });
 
-    const [allNftData, setAllNftTokens] = useState ([{
-        token: "",
-        wallet: "",
-        contract: "",
-        key: 1
-    }]);
-
+    const [allNftData, setAllNftData] = useState([{
+        type: ERC721TokenType.ERC721, // Must be of type ERC721
+        tokenId: "", // the token ID
+        tokenAddress: "", // the collection address / contract address this token belongs to
+        toAddress: "", // the wallet address this token is being transferred to
+    }])
 
     const addInput = () =>{
-        const updateData = [...allNftData, {token: "", wallet: "", contract: "", key: allNftData.length + 1}]
-        setAllNftTokens(updateData)
+        const updateData = [...allNftData, {type: ERC721TokenType.ERC721, tokenId: "", tokenAddress: "", toAdress: ""}]
+
+        // @ts-ignore
+        setAllNftData(updateData)
 
 
     };
 
     const removeInput  = () =>{
         allNftData.pop();
-        setAllNftTokens([...allNftData]);
+        setAllNftData([...allNftData]);
     };
 
     const handleChange =(event: React.ChangeEvent<HTMLInputElement>) =>{
@@ -54,62 +56,63 @@ export default function BatchTransfer(props: ImxProps) {
             {
                 if (event.target.name === "wallet")
                 {
-                    if(event.target.id === "Wallet-ID" + updateData[i].key)
+                    if(event.target.id === "Wallet-ID" + updateData[i].tokenId)
                     {
-                        updateData[i].wallet = event.target.value
+                        updateData[i].toAddress = event.target.value
                     }
                 }
                 else if (event.target.name === "token")
                 {
-                    if (event.target.id === "Token-ID" + updateData[i].key)
+                    if (event.target.id === "Token-ID" + updateData[i].tokenId)
                     {
-                        updateData[i].token = event.target.value
+                        updateData[i].tokenId = event.target.value
                     }
                 }
                 else if (event.target.name === "contract")
                 {
-                    if (event.target.id === "Contract-ID" + updateData[i].key)
+                    if (event.target.id === "Contract-ID" + updateData[i].tokenId)
                     {
-                        updateData[i].contract = event.target.value
+                        updateData[i].tokenAddress = event.target.value
                     }
                 }
             };
 
-        setAllNftTokens(updateData)
+        setAllNftData(updateData)
 
 
     };
 
+    //ToDo: Sind TokenIds immer eineindeutig ?
 
-    const addInputElements = allNftData.map(({token,wallet,key, contract})=>(
+    const addInputElements = allNftData.map(({tokenAddress,tokenId,toAddress})=>(
         <div className="InputNFT">
             <TextField
-                id={"Wallet-ID" + key}
+                id={"Wallet-ID" + tokenId}
                 label="Wallet-ID"
                 onChange={handleChange}
                 name= "wallet"
-                value={wallet === "" ? "": wallet}
+                value={toAddress === "" ? "": toAddress}
                 variant="outlined"
 
             />
 
             <TextField
-                id={"Token-ID" + key}
+                id={"Token-ID" + tokenId}
                 label="NFT-Token"
                 onChange={handleChange}
                 variant="outlined"
                 name= "token"
-                value={token === "" ? "": token}
+                value={tokenId === "" ? "": tokenId}
 
             />
 
             <TextField
-                id={"Contract-ID" + key}
+                id={"Contract-ID" + tokenId}
                 label="Contract-ID"
                 onChange={handleChange}
                 variant="outlined"
                 name= "contract"
-                value={contract === "" ? "": contract}
+                value={tokenAddress === "" ? "": tokenAddress}
 
             />
 
@@ -124,11 +127,11 @@ export default function BatchTransfer(props: ImxProps) {
             skipEmptyLines: true,
             complete: results => {
                 // @ts-ignore
-                let data = results.data.map((d, key) => ({wallet: d.wallet, token: d.token, contract: d.contract, key:key}))
+                let data = results.data.map((d) => ({tokenId: d.tokenId, toAddress: d.toAddress, tokenAddress: d.tokenAddress, type: ERC721TokenType.ERC721}))
                 // @ts-ignore
 
-                setAllNftTokens(data)
-                console.log(data)
+                setAllNftData(data)
+
 
 
             },
@@ -143,17 +146,7 @@ export default function BatchTransfer(props: ImxProps) {
 
     function batchNftTransfer() {
 
-        allNftData.map(element =>{
-
-            props.imxLink.transfer([{
-                type: ERC721TokenType.ERC721, // Must be of type ERC721
-                tokenId: element.token, // the token ID
-                tokenAddress: element.contract, // the collection address / contract address this token belongs to
-                toAddress: element.wallet, // the wallet address this token is being transferred to
-            },
-
-            ])
-        })
+        props.imxLink.transfer(allNftData);
 
     }
 
@@ -161,9 +154,8 @@ export default function BatchTransfer(props: ImxProps) {
         // Preventing the page from reloading
         event.preventDefault();
 
-        // Do something
         batchNftTransfer();
-        console.log(allNftData);
+
     }
 
 
@@ -228,10 +220,6 @@ export default function BatchTransfer(props: ImxProps) {
 
 
             </div>
-          {/*  { <Button size="large" onClick={x} variant="contained" component="label">
-        Send ETH
-      </Button>}*/}
-
 
         </div>
         </form>
