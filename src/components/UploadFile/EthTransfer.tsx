@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import {ETHTokenType, ImmutableXClient, Link} from "@imtbl/imx-sdk";
+import {ERC721TokenType, ETHTokenType, ImmutableXClient, Link} from "@imtbl/imx-sdk";
 import {TextField} from "@mui/material";
 import "./styles.css";
 import Papa from "papaparse";
@@ -26,63 +26,65 @@ export default function EthTransfer(props: ImxProps) {
         file: null,
     });
 
-    const [allEthData, setAllEthData] = useState([{Eth: "", wallet: "", key:1}]);
-
+    const [EthTransferData, setEthTransferData] = useState([{
+        type: ETHTokenType.ETH,
+        amount: "",
+        toAddress: "",
+    }])
     const addInput = () =>{
-        const updateDate = [...allEthData, {Eth: "", wallet: "", key: allEthData.length + 1}]
-        setAllEthData(updateDate)
+        const updateDate2 = [...EthTransferData, {type: ETHTokenType.ETH, amount: "", toAddress:""}]
+        setEthTransferData(updateDate2)
     };
 
     const removeInput  = () =>{
-        allEthData.pop();
-        setAllEthData([...allEthData]);
+        EthTransferData.pop();
+        setEthTransferData([...EthTransferData]);
     };
 
     const handleChange =(event: React.ChangeEvent<HTMLInputElement>) =>{
 
-        let updateData = [...allEthData]
-
+        let updateData = [...EthTransferData]
         for(let i= 0 ; i < updateData.length ; i++)
         {
             if (event.target.name === "wallet")
             {
-                if(event.target.id === "Wallet-ID" + updateData[i].key)
+                if(event.target.id === "Wallet-ID" + updateData[i].toAddress)
                 {
-                    updateData[i].wallet = event.target.value
+                    updateData[i].toAddress = event.target.value
                 }
             }
             else if (event.target.name === "Etherium")
             {
-                if (event.target.id === "Etherium-ID" + updateData[i].key)
+                if (event.target.id === "Etherium-ID" + updateData[i].toAddress)
                 {
-                    updateData[i].Eth = event.target.value
+                    updateData[i].amount = event.target.value
                 }
             }
         }
 
-        setAllEthData(updateData)
+        setEthTransferData(updateData)
 
     };
-
-    const addInputElements = allEthData.map(({Eth,wallet,key})=>(
+    //ToDo: Eindeutigkeit von toAddress?
+    const addInputElements = EthTransferData.map(({amount,toAddress})=>(
         <div className="InputETH">
             <TextField
-                id={"Wallet-ID" + key}
+                id={"Wallet-ID" + toAddress}
                 label="Wallet-ID"
                 onChange={handleChange}
                 name= "wallet"
                 variant="outlined"
-                value={wallet === "" ? "": wallet}
+                value={toAddress === "" ? "": toAddress}
 
             />
 
             <TextField
-                id={"Etherium-ID" + key}
+                id={"Etherium-ID" + toAddress}
                 label="Etherium"
                 onChange={handleChange}
                 variant="outlined"
                 name= "Etherium"
-                value={Eth === "" ? "": Eth}
+                value={amount === "" ? "": amount}
 
             />
 
@@ -98,11 +100,10 @@ export default function EthTransfer(props: ImxProps) {
 
 
                 // @ts-ignore
-                let data = results.data.map((d, key) => ({wallet: d.wallet, Eth: d.Eth, key:key}))
+                let data = results.data.map((d) => ({toAddress: d.toAddress, amount: d.amount, type: ETHTokenType.ETH}))
                 // @ts-ignore
 
-                setAllEthData(data)
-
+                setEthTransferData(data)
 
             },
         });
@@ -113,28 +114,9 @@ export default function EthTransfer(props: ImxProps) {
     };
 
 
-
-
     function transferEth() {
-       let process = allEthData.map(element =>{
+        props.imxLink.transfer(EthTransferData)
 
-            props.imxLink.transfer([{
-                // @ts-ignore
-                amount: element.Eth,
-                type: ETHTokenType.ETH,
-                // @ts-ignore
-                toAdress: element.wallet,
-            }])
-        })
-      /*  props.imxLink.transfer([
-            {
-
-                amount: "0.01",
-                type: ETHTokenType.ETH,
-                toAddress: "0xC4d5a9e58CAbcA03d4aaF3ded94467F38CDE9b38",
-            },
-        ]);*/
-        console.log(process)
     }
 
     const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
