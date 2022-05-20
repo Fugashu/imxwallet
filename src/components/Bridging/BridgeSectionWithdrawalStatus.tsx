@@ -1,27 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ERC20TokenType,
   ERC721TokenType,
   ETHTokenType,
-  ImmutableMethodResults,
-  ImmutableRollupStatus,
   ImmutableXClient,
   Link,
 } from "@imtbl/imx-sdk";
 import Button from "@mui/material/Button";
 import "./styles.css";
-import axios from "axios";
-import {
-  ropstenApiAddress,
-  ropstenInventoryEndpoint,
-  ropstenWithdrawalEndpoint,
-} from "../constants";
+
 import { ethers } from "ethers";
+import {
+  callCompletedWithdrawals,
+  getImageForItem,
+  getSymbolForToken,
+} from "./BackendCalls";
 
 interface BridgeSectionWithdrawalStatusInterface {
   imxLink: Link;
   walletAddress: string;
   apiClient: ImmutableXClient;
+  apiAddress: string;
 }
 const BridgeSectionWithdrawalStatus = (
   props: BridgeSectionWithdrawalStatusInterface
@@ -30,14 +29,10 @@ const BridgeSectionWithdrawalStatus = (
   const [preparationInventory, setPreparationInventory] = useState([]);
 
   async function loadWithdrawals() {
-    let result = await axios(
-      ropstenWithdrawalEndpoint +
-        "withdrawn_to_wallet=" +
-        false +
-        "&user=" +
-        props.walletAddress +
-        "&rollup_status=" +
-        "confirmed"
+    let result = await callCompletedWithdrawals(
+      props.apiAddress,
+      props.walletAddress,
+      "confirmed"
     );
 
     console.log(result.data.result);
@@ -45,6 +40,7 @@ const BridgeSectionWithdrawalStatus = (
 
     await res.map(async (item: any) => {
       let url = await getImageForItem(
+        props.apiAddress,
         item["token"]["data"]["token_address"],
         item["token"]["data"]["token_id"]
       );
@@ -53,6 +49,7 @@ const BridgeSectionWithdrawalStatus = (
     });
     await res.map(async (item: any) => {
       let symbol = await getSymbolForToken(
+        props.apiAddress,
         item["token"]["data"]["token_address"]
       );
 
@@ -68,26 +65,16 @@ const BridgeSectionWithdrawalStatus = (
     console.log(res);
     setReadyToWithdrawInventory(res);
 
-    result = await axios(
-      ropstenWithdrawalEndpoint +
-        "withdrawn_to_wallet=" +
-        false +
-        "&user=" +
-        props.walletAddress +
-        "&rollup_status=" +
-        "included"
+    result = await callCompletedWithdrawals(
+      props.apiAddress,
+      props.walletAddress,
+      "included"
     );
 
     console.log(result.data.result);
     res = result.data.result;
 
     setPreparationInventory(res);
-  }
-
-  async function getImageForItem(tokenAddress: string, tokenId: string) {
-    let query = ropstenApiAddress + "/assets/" + tokenAddress + "/" + tokenId;
-    let result = await axios(query);
-    return result.data.image_url;
   }
 
   // complete an NFT withdrawal
@@ -127,12 +114,6 @@ const BridgeSectionWithdrawalStatus = (
     }
   }
 
-  async function getSymbolForToken(address: string) {
-    let query = ropstenApiAddress + "/tokens/" + address;
-    let result = await axios(query);
-    return result.data.symbol;
-  }
-
   return (
     <div>
       <div className="deposit-withdraw-section">
@@ -166,10 +147,26 @@ const BridgeSectionWithdrawalStatus = (
                         alt={""}
                       />
 
-                      <p>
-                        Token ID:
-                        {item["token"]["data"]["token_id"]}
-                      </p>
+                      {item["token"]["data"]["token_id"] ? (
+                        <p>
+                          NFT ID:
+                          {item["token"]["data"]["token_id"]}
+                          <br />
+                          NFT Address:
+                          {item["token"]["data"]["token_address"]}
+                          <br />
+                        </p>
+                      ) : (
+                        <p>
+                          Token Symbol:{" "}
+                          {item["symbol"] ? item["symbol"] : "ETH"}
+                          <br />
+                          Quantity:
+                          {ethers.utils.formatEther(
+                            item["token"]["data"]["quantity"]
+                          )}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>

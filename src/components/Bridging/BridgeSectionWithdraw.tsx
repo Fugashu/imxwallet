@@ -3,37 +3,32 @@ import {
   ERC20TokenType,
   ERC721TokenType,
   ETHTokenType,
-  ImmutableMethodResults,
-  ImmutableRollupStatus,
   ImmutableXClient,
   Link,
 } from "@imtbl/imx-sdk";
 import Button from "@mui/material/Button";
 import "./styles.css";
 import TextField from "@mui/material/TextField";
-import axios from "axios";
-import { ropstenInventoryEndpoint } from "../constants";
-import { getSymbolForToken } from "./BackendCalls";
+
+import { callInventory, getSymbolForToken } from "./BackendCalls";
 
 interface BridgeSectionWithdrawInterface {
   imxLink: Link;
   walletAddress: string;
   apiClient: ImmutableXClient;
+  apiAddress: string;
 }
 const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
   const [prepareETHAmount, setPrepareETHAmount] = useState("");
   const [prepareERC20Amount, setPrepareERC20Amount] = useState("");
   const [prepareERC20TokenAddr, setPrepareERC20TokenAddr] = useState("");
-
-  const [completeTokenId, setCompleteTokenId] = useState("");
-  const [completeTokenAddress, setCompleteTokenAddress] = useState("");
   const [collectionAddress, setCollectionAddress] = useState("");
   const [collectionName, setCollectionName] = useState("");
   const [collectionImage, setCollectionImage] = useState("");
   const [inventory, setInventory] = useState([]);
-  const [readyForWithdrawalInventory, setReadForWithdrawalInventory] = useState(
-    []
-  );
+
+  // not used
+  /*
   async function reloadWithdrawals(): Promise<void> {
     // included in batch awaiting confirmation
     setReadyWithdrawals(
@@ -55,7 +50,9 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
     useState<ImmutableMethodResults.ImmutableGetWithdrawalsResult>(Object);
   const [completedWithdrawals, setCompletedWithdrawals] =
     useState<ImmutableMethodResults.ImmutableGetWithdrawalsResult>(Object);
+*/
 
+  // prepare an ERC721 withdrawal
   async function prepareWithdrawalNFT(tokenId: string) {
     try {
       await props.imxLink.prepareWithdrawal({
@@ -79,61 +76,40 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
       console.log(`Error while preparing ETH withdrawal:${e}`);
     }
   }
-
+  // prepare an ERC20 withdrawal
   async function prepareWithdrawalERC20() {
     const response = await props.imxLink.prepareWithdrawal({
       type: ERC20TokenType.ERC20,
       tokenAddress: prepareERC20TokenAddr,
-      symbol: await getSymbolForToken(prepareERC20TokenAddr),
-      amount: prepareERC20Amount, //The amount of the token to withdraw
+      symbol: await getSymbolForToken(props.apiAddress, prepareERC20TokenAddr),
+      amount: prepareERC20Amount,
     });
 
     console.log(response);
-    // returns { withdrawalId: 123456 }
-  }
-
-  // complete an eth withdrawal
-  async function completeWithdrawalETH() {
-    try {
-      await props.imxLink.completeWithdrawal({
-        type: ETHTokenType.ETH,
-      });
-    } catch (e) {
-      console.log(`Error while completing ETH withdrawal:${e}`);
-    }
   }
 
   async function fetchInventoryIMX() {
-    await axios(
-      ropstenInventoryEndpoint +
-        "collection=" +
-        collectionAddress +
-        "&user=" +
-        props.walletAddress +
-        "&status=" +
-        "imx"
-    )
-      .catch((reason) => {
-        alert("Collection was not found");
-      })
-      .then((value) => {
-        console.log(value?.data.result);
-        const nftArray = value?.data.result;
-        if (nftArray.length === 0) {
-          alert(
-            "The collection address was either wrong or you do not own IMX NFTs of this collection."
-          );
-          return;
-        }
-        setCollectionName(nftArray[0]["collection"]["name"]);
-        setCollectionImage(nftArray[0]["collection"]["icon_url"]);
-        setInventory(nftArray);
-      });
+    let value = await callInventory(
+      props.apiAddress,
+      collectionAddress,
+      props.walletAddress,
+      "imx"
+    );
+    const nftArray = value?.data.result;
+    if (nftArray.length === 0) {
+      alert(
+        "The collection address was either wrong or you do not own IMX NFTs of this collection."
+      );
+      return;
+    }
+    setCollectionName(nftArray[0]["collection"]["name"]);
+    setCollectionImage(nftArray[0]["collection"]["icon_url"]);
+    setInventory(nftArray);
   }
   return (
     <div className="deposit-withdraw-section">
       <div>
-        <h1>Prepare ETH Withdrawal ETH:</h1>
+        <h1>Prepare ETH & ERC20 Withdrawal:</h1>
         <div className="deposit-withdraw-wrapper">
           <div className="deposit-withdraw-group">
             Prepare ETH for withdrawal:
@@ -174,11 +150,12 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
               size="large"
               variant="contained"
               component="label"
-              onClick={prepareWithdrawalETH}
+              onClick={prepareWithdrawalERC20}
             >
               Prepare ERC20 Withdrawal
             </Button>
           </div>
+          {/*
           <div className="deposit-withdraw-group">
             Complete ETH withdrawal:
             <Button
@@ -189,7 +166,7 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
             >
               Complete ETH Withdrawal
             </Button>
-          </div>
+          </div>*/}
         </div>
       </div>
       <div className="deposit-withdraw-section">
@@ -197,7 +174,7 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
           <h1>Prepare NFT Withdrawal:</h1>
           <div className="deposit-withdraw-wrapper">
             <div className="deposit-withdraw-group">
-              Collection address you want to withdraw/deposit NFTs:
+              Collection address you want to withdraw NFTs:
               <TextField
                 id="outlined-basic"
                 label="Collection Address:"

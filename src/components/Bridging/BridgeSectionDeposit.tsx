@@ -7,21 +7,23 @@ import {
 } from "@imtbl/imx-sdk";
 import { Button, TextField } from "@mui/material";
 import "./styles.css";
-import axios from "axios";
-import { ropstenInventoryEndpoint } from "../constants";
+import { callInventory } from "./BackendCalls";
 interface BridgeSectionDepositInterface {
   imxLink: Link;
   walletAddress: string;
   apiClient: ImmutableXClient;
+  apiAddress: string;
 }
 
 const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
+  // eslint-disable-next-line
   const [depositAmount, setDepositAmount] = useState("");
   const [collectionAddress, setCollectionAddress] = useState("");
   const [collectionName, setCollectionName] = useState("");
   const [collectionImage, setCollectionImage] = useState("");
   const [inventory, setInventory] = useState([]);
 
+  // deposit ERC20s
   async function depositNoParams() {
     try {
       // @ts-ignore
@@ -44,7 +46,8 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
     }
   }
 
-  // deposit eth
+  // deposit ETH
+  // eslint-disable-next-line
   async function depositETH() {
     try {
       await props.imxLink.deposit({
@@ -55,32 +58,24 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
       console.log(`Error while depositing ETH:${e}`);
     }
   }
+  // retrieves Inventory on L1
   async function fetchInventoryETH() {
-    await axios(
-      ropstenInventoryEndpoint +
-        "collection=" +
-        collectionAddress +
-        "&user=" +
-        props.walletAddress +
-        "&status=" +
-        "eth"
-    )
-      .catch((reason) => {
-        alert("Collection was not found");
-      })
-      .then((value) => {
-        console.log(value?.data.result);
-        const nftArray = value?.data.result;
-        if (nftArray.length === 0) {
-          alert(
-            "The collection address was either wrong or you do not own IMX NFTs of this collection."
-          );
-          return;
-        }
-        setCollectionName(nftArray[0]["collection"]["name"]);
-        setCollectionImage(nftArray[0]["collection"]["icon_url"]);
-        setInventory(nftArray);
-      });
+    let value = await callInventory(
+      props.apiAddress,
+      collectionAddress,
+      props.walletAddress,
+      "eth"
+    );
+    const nftArray = value?.data.result;
+    if (nftArray.length === 0) {
+      alert(
+        "The collection address was either wrong or you do not own IMX NFTs of this collection."
+      );
+      return;
+    }
+    setCollectionName(nftArray[0]["collection"]["name"]);
+    setCollectionImage(nftArray[0]["collection"]["icon_url"]);
+    setInventory(nftArray);
   }
 
   return (
@@ -123,7 +118,7 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
         <h1>Deposit NFT:</h1>
         <div className="deposit-withdraw-wrapper">
           <div className="deposit-withdraw-group">
-            Collection address you want to withdraw/deposit NFTs:
+            Collection address you want to deposit NFTs:
             <TextField
               id="outlined-basic"
               label="Collection Address:"

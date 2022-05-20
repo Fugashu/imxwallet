@@ -2,6 +2,7 @@ import React from "react";
 import Button from "@mui/material/Button";
 import "./styles.css";
 import githubLogo from "../../assets/png/GitHub-Mark-Light-64px.png";
+
 interface NetworkSwitchFunctions {
   handleClickMainnet: any;
   handleClickRopsten: any;
