@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
-import NftTransfer from "./NftTransfer"
-import EthTransfer from "./EthTransfer"
+import React from "react";
+import { ImmutableXClient, Link } from "@imtbl/imx-sdk";
+import NftTransfer from "./NftTransfer";
+import EthTransfer from "./EthTransfer";
 import "./styles.css";
-
 
 interface ImxProps {
   walletAddress: string;
@@ -12,18 +11,18 @@ interface ImxProps {
 }
 
 export default function BatchTransfer(props: ImxProps) {
-    return(
-        <div>
-        <NftTransfer
-            walletAddress={props.walletAddress}
-            apiClient={props.apiClient}
-            imxLink={props.imxLink}
-        />
-            <EthTransfer
-                walletAddress={props.walletAddress}
-                apiClient={props.apiClient}
-                imxLink={props.imxLink}
-            />
-        </div>
-    )
+  return (
+    <div>
+      <NftTransfer
+        walletAddress={props.walletAddress}
+        apiClient={props.apiClient}
+        imxLink={props.imxLink}
+      />
+      <EthTransfer
+        walletAddress={props.walletAddress}
+        apiClient={props.apiClient}
+        imxLink={props.imxLink}
+      />
+    </div>
+  );
 }
