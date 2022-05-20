@@ -88,15 +88,12 @@ export default function EthTransfer(props: ImxProps) {
     Papa.parse(event.target.files[0], {
       header: true,
       skipEmptyLines: true,
-      complete: (results) => {
-        // @ts-ignore
+      complete: (results: { data: any[] }) => {
         let data = results.data.map((d: any) => ({
           toAddress: d.toAddress,
           amount: d.amount,
           type: ETHTokenType.ETH,
         }));
-        // @ts-ignore
-
         setEthTransferData(data);
       },
     });
