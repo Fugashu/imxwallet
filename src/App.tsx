@@ -14,7 +14,6 @@ import {
 } from "./components/constants";
 import Header from "./components/Header/Header";
 import { CojodiNetworkSwitcher } from "./components/BackendCalls/CojodiNetworkSwitcher";
-import SingleAssetTransfer from "./components/SingleAssetTransfer/SingleAssetTransfer";
 
 function App() {
   const imxLinkMainnet = new Link(mainnetLinkAddress);
@@ -24,6 +23,7 @@ function App() {
   const [walletAddress, setWalletAddressAddress] = useState("undefined");
   const [connectedNetwork, setConnectedNetwork] = useState("undefined");
   const [apiClient, setApiClient] = useState<ImmutableXClient>(Object);
+  const [apiEndpointAddress, setApiEndpointAddress] = useState("");
 
   // initialise an Immutable X Client to interact with apis more easily
   const buildIMXMainnet = async () => {
@@ -34,6 +34,7 @@ function App() {
       await CojodiNetworkSwitcher.switchToChain(chainRpcData.eth_mainnet);
       await linkSetupMainnet();
       setConnectedNetwork("Mainnet");
+      setApiEndpointAddress(publicApiUrl);
     } catch (e) {
       console.log("Unknown Error while connecting wallet.");
     }
@@ -62,6 +63,7 @@ function App() {
       await CojodiNetworkSwitcher.switchToChain(chainRpcData.ropsten);
       await linkSetupRopsten();
       setConnectedNetwork("Ropsten");
+      setApiEndpointAddress(publicApiUrl);
     } catch (e) {
       console.log("Unknown Error while connecting wallet.");
     }
@@ -107,6 +109,7 @@ function App() {
               walletAddress={walletAddress}
               apiClient={apiClient}
               imxLink={imxLink}
+              apiAddress={apiEndpointAddress}
             />
           }
         />
@@ -120,7 +123,6 @@ function App() {
             />
           }
         />
-        <Route path="/singleAssetTransfer" element={<SingleAssetTransfer />} />
       </Routes>
     </div>
   );

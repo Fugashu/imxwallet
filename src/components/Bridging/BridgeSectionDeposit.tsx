@@ -7,17 +7,23 @@ import {
 } from "@imtbl/imx-sdk";
 import { Button, TextField } from "@mui/material";
 import "./styles.css";
+import { callInventory } from "./BackendCalls";
 interface BridgeSectionDepositInterface {
   imxLink: Link;
   walletAddress: string;
   apiClient: ImmutableXClient;
+  apiAddress: string;
 }
 
 const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
+  // eslint-disable-next-line
   const [depositAmount, setDepositAmount] = useState("");
-  const [depositTokenId, setDepositTokenId] = useState("");
-  const [depositTokenAddress, setDepositTokenAddress] = useState("");
+  const [collectionAddress, setCollectionAddress] = useState("");
+  const [collectionName, setCollectionName] = useState("");
+  const [collectionImage, setCollectionImage] = useState("");
+  const [inventory, setInventory] = useState([]);
 
+  // deposit ERC20s
   async function depositNoParams() {
     try {
       // @ts-ignore
@@ -28,19 +34,20 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
   }
 
   // deposit an NFT
-  async function depositNFT() {
+  async function depositNFT(tokenId: string) {
     try {
       await props.imxLink.deposit({
         type: ERC721TokenType.ERC721,
-        tokenId: depositTokenId,
-        tokenAddress: depositTokenAddress,
+        tokenId: tokenId,
+        tokenAddress: collectionAddress,
       });
     } catch (e) {
       console.log(`Error while depositing NFT:${e}`);
     }
   }
 
-  // deposit eth
+  // deposit ETH
+  // eslint-disable-next-line
   async function depositETH() {
     try {
       await props.imxLink.deposit({
@@ -51,64 +58,120 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
       console.log(`Error while depositing ETH:${e}`);
     }
   }
+  // retrieves Inventory on L1
+  async function fetchInventoryETH() {
+    let value = await callInventory(
+      props.apiAddress,
+      collectionAddress,
+      props.walletAddress,
+      "eth"
+    );
+    const nftArray = value?.data.result;
+    if (nftArray.length === 0) {
+      alert(
+        "The collection address was either wrong or you do not own IMX NFTs of this collection."
+      );
+      return;
+    }
+    setCollectionName(nftArray[0]["collection"]["name"]);
+    setCollectionImage(nftArray[0]["collection"]["icon_url"]);
+    setInventory(nftArray);
+  }
 
   return (
     <div className="deposit-withdraw-section">
-      <h1>Deposit:</h1>
-      <div className="deposit-withdraw-wrapper">
-        <div className="deposit-withdraw-group">
-          Deposit No Params:
-          <Button
-            size="large"
-            variant="contained"
-            component="label"
-            onClick={depositNoParams}
-          >
-            Deposit
-          </Button>
+      <div>
+        <h1>Deposit ERC20:</h1>
+        <div className="deposit-withdraw-wrapper">
+          <div className="deposit-withdraw-group">
+            <Button
+              size="large"
+              variant="contained"
+              component="label"
+              onClick={depositNoParams}
+            >
+              Deposit
+            </Button>
+          </div>
+          {/*
+          <div className="deposit-withdraw-group">
+            Deposit ETH:
+            <TextField
+              id="outlined-basic"
+              label="Amount (ETH):"
+              variant="outlined"
+              value={depositAmount}
+              onChange={(e) => setDepositAmount(e.target.value)}
+            />
+            <Button
+              size="large"
+              variant="contained"
+              component="label"
+              onClick={depositETH}
+            >
+              Deposit ETH
+            </Button>
+          </div>*/}
         </div>
-        <div className="deposit-withdraw-group">
-          Deposit ETH:
-          <TextField
-            id="outlined-basic"
-            label="Amount (ETH):"
-            variant="outlined"
-            value={depositAmount}
-            onChange={(e) => setDepositAmount(e.target.value)}
-          />
-          <Button
-            size="large"
-            variant="contained"
-            component="label"
-            onClick={depositETH}
-          >
-            Deposit ETH
-          </Button>
+      </div>
+      <div>
+        <h1>Deposit NFT:</h1>
+        <div className="deposit-withdraw-wrapper">
+          <div className="deposit-withdraw-group">
+            Collection address you want to deposit NFTs:
+            <TextField
+              id="outlined-basic"
+              label="Collection Address:"
+              variant="outlined"
+              value={collectionAddress}
+              onChange={(e) => setCollectionAddress(e.target.value)}
+            />
+            <Button
+              size="large"
+              variant="contained"
+              component="label"
+              onClick={fetchInventoryETH}
+            >
+              Fetch Inventory
+            </Button>
+          </div>
+          <div className="deposit-withdraw-group">
+            {collectionImage ? (
+              <div>
+                <img
+                  alt="collection-img"
+                  style={{ width: "200px", height: "auto" }}
+                  src={collectionImage}
+                />
+                <p>{collectionName}</p>
+              </div>
+            ) : null}
+          </div>
         </div>
-        <div className="deposit-withdraw-group">
-          Deposit NFT:
-          <TextField
-            id="outlined-basic"
-            label="Token ID"
-            variant="outlined"
-            value={depositTokenId}
-            onChange={(e) => setDepositTokenId(e.target.value)}
-          />
-          <TextField
-            id="outlined-basic"
-            label="Token Address"
-            variant="outlined"
-            value={depositTokenAddress}
-            onChange={(e) => setDepositTokenAddress(e.target.value)}
-          />
-          <Button
-            size="large"
-            variant="contained"
-            component="label"
-            onClick={depositNFT}
-          >
-            Deposit NFT
-          </Button>
+      </div>
+      <div>
+        {collectionName ? <h1>Your NFTs from {collectionName}:</h1> : null}
+        <div className="deposit-withdraw-wrapper">
+          <div className="inventory-wrapper">
+            {inventory.map((item) => (
+              <div key={item["id"]} className="inventory-item">
+                <img
+                  style={{ width: "250px", height: "auto" }}
+                  src={item["image_url"]}
+                  alt={item["image_url"]}
+                />
+                <p>Token ID: {item["token_id"]}</p>
+                <Button
+                  size="small"
+                  variant="contained"
+                  component="label"
+                  onClick={() => depositNFT(item["token_id"])}
+                >
+                  Deposit
+                </Button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

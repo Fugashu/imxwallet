@@ -16,8 +16,9 @@ interface BridgingProps {
   imxLink: Link;
   walletAddress: string;
   apiClient: ImmutableXClient;
+  apiAddress: string;
 }
-
+//fixme different api endpoints for mainnet and ropsten
 const Bridging = (props: BridgingProps) => {
   return (
     <div>
@@ -27,18 +28,21 @@ const Bridging = (props: BridgingProps) => {
             imxLink={props.imxLink}
             walletAddress={props.walletAddress}
             apiClient={props.apiClient}
+            apiAddress={props.apiAddress}
           />
 
           <BridgeSectionWithdraw
             imxLink={props.imxLink}
             walletAddress={props.walletAddress}
             apiClient={props.apiClient}
+            apiAddress={props.apiAddress}
           />
 
           <BridgeSectionWithdrawalStatus
             imxLink={props.imxLink}
             walletAddress={props.walletAddress}
             apiClient={props.apiClient}
+            apiAddress={props.apiAddress}
           />
         </div>
       )}
