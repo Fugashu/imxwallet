@@ -91,22 +91,26 @@ export default function EthTransfer(props: ImxProps) {
     )
   );
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // @ts-ignore
-    Papa.parse(event.target.files[0], {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        // @ts-ignore
-        let data = results.data.map((d: any) => ({
-          toAddress: d.toAddress,
-          amount: d.amount,
-          type: ETHTokenType.ETH,
-        }));
-        // @ts-ignore
+    try {
+      // @ts-ignore
+      Papa.parse(event.target.files[0], {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          // @ts-ignore
+          let data = results.data.map((d: any) => ({
+            toAddress: d.toAddress,
+            amount: d.amount,
+            type: ETHTokenType.ETH,
+          }));
+          // @ts-ignore
 
-        setEthTransferData(data);
-      },
-    });
+          setEthTransferData(data);
+        },
+      });
+    } catch (e) {
+      console.log(`Error while depositing ETH:${e}`);
+    }
     setFormValues((prevFormValues) => ({
       ...prevFormValues,
       file: event.target.files ? event.target.files[0] : null,
@@ -114,7 +118,11 @@ export default function EthTransfer(props: ImxProps) {
   };
 
   function transferEth() {
-    props.imxLink.transfer(EthTransferData);
+    try {
+      props.imxLink.transfer(EthTransferData);
+    } catch (e) {
+      console.log(`Error while depositing ETH:${e}`);
+    }
   }
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {

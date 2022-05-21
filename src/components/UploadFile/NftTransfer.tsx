@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import { ERC721TokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import { TextField } from "@mui/material";
 import "./styles.css";
-
+import NftTemplate from "../../assets/csv_templates/NftTransferTemplate.csv";
 interface PostData {
   title: string;
   body: string;
@@ -110,24 +110,27 @@ export default function BatchTransfer(props: ImxProps) {
   );
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // @ts-ignore
-    Papa.parse(event.target.files[0], {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        // @ts-ignore
-        let data = results.data.map((d: any) => ({
-          tokenId: d.tokenId,
-          toAddress: d.toAddress,
-          tokenAddress: d.tokenAddress,
-          type: ERC721TokenType.ERC721,
-        }));
-        // @ts-ignore
+    try {
+      // @ts-ignore
+      Papa.parse(event.target.files[0], {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          // @ts-ignore
+          let data = results.data.map((d: any) => ({
+            tokenId: d.tokenId,
+            toAddress: d.toAddress,
+            tokenAddress: d.tokenAddress,
+            type: ERC721TokenType.ERC721,
+          }));
+          // @ts-ignore
 
-        setAllNftData(data);
-      },
-    });
-
+          setAllNftData(data);
+        },
+      });
+    } catch (e) {
+      console.log(`Error while depositing:${e}`);
+    }
     setFormValues((prevFormValues) => ({
       ...prevFormValues,
       file: event.target.files ? event.target.files[0] : null,
@@ -135,7 +138,11 @@ export default function BatchTransfer(props: ImxProps) {
   };
 
   function batchNftTransfer() {
-    props.imxLink.transfer(allNftData);
+    try {
+      props.imxLink.transfer(allNftData);
+    } catch (e) {
+      console.log(`Error while depositing:${e}`);
+    }
   }
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
@@ -158,6 +165,16 @@ export default function BatchTransfer(props: ImxProps) {
               inputProps={{ readOnly: true }}
               value={formValues.file?.name ?? "No File selected.."}
             />
+            <Button
+              size="large"
+              variant="contained"
+              component="label"
+              href={NftTemplate}
+              target="_blank"
+              download
+            >
+              Download Template
+            </Button>
 
             <Button size="large" variant="contained" component="label">
               Upload File
