@@ -10,6 +10,8 @@ import {
 import { TextField } from "@mui/material";
 import "./styles.css";
 import Papa from "papaparse";
+// @ts-ignore
+import EthTemplate from "../../assets/csv_templates/EthereumTransferTemplate.csv";
 
 interface PostData {
   title: string;
@@ -155,6 +157,16 @@ export default function EthTransfer(props: ImxProps) {
                 hidden
               />
             </Button>
+            <a
+              href={EthTemplate}
+              download="EthereumTransferTemplate"
+              target="_blank"
+              style={{ textDecoration: "none" }}
+            >
+              <Button size="large" variant="contained" component="label">
+                Get Template
+              </Button>
+            </a>
           </div>
           <div className="NFT-Items">
             {addInputElements}

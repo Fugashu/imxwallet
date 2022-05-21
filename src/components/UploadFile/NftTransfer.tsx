@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import { ERC721TokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import { TextField } from "@mui/material";
 import "./styles.css";
+// @ts-ignore
 import NftTemplate from "../../assets/csv_templates/NftTransferTemplate.csv";
 interface PostData {
   title: string;
@@ -165,16 +166,6 @@ export default function BatchTransfer(props: ImxProps) {
               inputProps={{ readOnly: true }}
               value={formValues.file?.name ?? "No File selected.."}
             />
-            <Button
-              size="large"
-              variant="contained"
-              component="label"
-              href={NftTemplate}
-              target="_blank"
-              download
-            >
-              Download Template
-            </Button>
 
             <Button size="large" variant="contained" component="label">
               Upload File
@@ -185,6 +176,16 @@ export default function BatchTransfer(props: ImxProps) {
                 hidden
               />
             </Button>
+            <a
+              href={NftTemplate}
+              download="NftTransferTemplate"
+              target="_blank"
+              style={{ textDecoration: "none" }}
+            >
+              <Button size="large" variant="contained" component="label">
+                Get Template
+              </Button>
+            </a>
           </div>
           <div className="NFT-Items">
             {addInputElements}
