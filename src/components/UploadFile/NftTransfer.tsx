@@ -5,7 +5,8 @@ import Button from "@mui/material/Button";
 import { ERC721TokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import { TextField } from "@mui/material";
 import "./styles.css";
-
+// @ts-ignore
+import NftTemplate from "../../assets/csv_templates/NftTransferTemplate.csv";
 interface PostData {
   title: string;
   body: string;
@@ -41,7 +42,7 @@ export default function BatchTransfer(props: ImxProps) {
         type: ERC721TokenType.ERC721,
         tokenId: "",
         tokenAddress: "",
-        toAdress: "",
+        toAddress: "",
       },
     ];
 
@@ -59,15 +60,15 @@ export default function BatchTransfer(props: ImxProps) {
 
     for (let i = 0; i < updateData.length; i++) {
       if (event.target.name === "wallet") {
-        if (event.target.id === "Wallet-ID" + updateData[i].tokenId) {
+        if (event.target.id === "Wallet-ID" + i) {
           updateData[i].toAddress = event.target.value;
         }
       } else if (event.target.name === "token") {
-        if (event.target.id === "Token-ID" + updateData[i].tokenId) {
+        if (event.target.id === "Token-ID" + i) {
           updateData[i].tokenId = event.target.value;
         }
       } else if (event.target.name === "contract") {
-        if (event.target.id === "Contract-ID" + updateData[i].tokenId) {
+        if (event.target.id === "Contract-ID" + i) {
           updateData[i].tokenAddress = event.target.value;
         }
       }
@@ -76,13 +77,11 @@ export default function BatchTransfer(props: ImxProps) {
     setAllNftData(updateData);
   };
 
-  //ToDo: Sind TokenIds immer eineindeutig ?
-
   const addInputElements = allNftData.map(
-    ({ tokenAddress, tokenId, toAddress }) => (
+    ({ tokenAddress, tokenId, toAddress }, key: number) => (
       <div className="InputNFT">
         <TextField
-          id={"Wallet-ID" + tokenId}
+          id={"Wallet-ID" + key}
           label="Wallet-ID"
           onChange={handleChange}
           name="wallet"
@@ -91,7 +90,7 @@ export default function BatchTransfer(props: ImxProps) {
         />
 
         <TextField
-          id={"Token-ID" + tokenId}
+          id={"Token-ID" + key}
           label="NFT-Token"
           onChange={handleChange}
           variant="outlined"
@@ -100,7 +99,7 @@ export default function BatchTransfer(props: ImxProps) {
         />
 
         <TextField
-          id={"Contract-ID" + tokenId}
+          id={"Contract-ID" + key}
           label="Contract-ID"
           onChange={handleChange}
           variant="outlined"
@@ -112,24 +111,27 @@ export default function BatchTransfer(props: ImxProps) {
   );
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // @ts-ignore
-    Papa.parse(event.target.files[0], {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        // @ts-ignore
-        let data = results.data.map((d: any) => ({
-          tokenId: d.tokenId,
-          toAddress: d.toAddress,
-          tokenAddress: d.tokenAddress,
-          type: ERC721TokenType.ERC721,
-        }));
-        // @ts-ignore
+    try {
+      // @ts-ignore
+      Papa.parse(event.target.files[0], {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          // @ts-ignore
+          let data = results.data.map((d: any) => ({
+            tokenId: d.tokenId,
+            toAddress: d.toAddress,
+            tokenAddress: d.tokenAddress,
+            type: ERC721TokenType.ERC721,
+          }));
+          // @ts-ignore
 
-        setAllNftData(data);
-      },
-    });
-
+          setAllNftData(data);
+        },
+      });
+    } catch (e) {
+      console.log(`Error while depositing:${e}`);
+    }
     setFormValues((prevFormValues) => ({
       ...prevFormValues,
       file: event.target.files ? event.target.files[0] : null,
@@ -137,7 +139,11 @@ export default function BatchTransfer(props: ImxProps) {
   };
 
   function batchNftTransfer() {
-    props.imxLink.transfer(allNftData);
+    try {
+      props.imxLink.transfer(allNftData);
+    } catch (e) {
+      console.log(`Error while depositing:${e}`);
+    }
   }
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
@@ -170,6 +176,17 @@ export default function BatchTransfer(props: ImxProps) {
                 hidden
               />
             </Button>
+            <a
+              href={NftTemplate}
+              rel="noreferrer"
+              download="NftTransferTemplate"
+              target="_blank"
+              style={{ textDecoration: "none" }}
+            >
+              <Button size="large" variant="contained" component="label">
+                Get Template
+              </Button>
+            </a>
           </div>
           <div className="NFT-Items">
             {addInputElements}

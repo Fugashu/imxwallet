@@ -5,6 +5,8 @@ import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import { TextField } from "@mui/material";
 import "./styles.css";
 import Papa from "papaparse";
+// @ts-ignore
+import EthTemplate from "../../assets/csv_templates/EthereumTransferTemplate.csv";
 
 interface PostData {
   title: string;
@@ -33,11 +35,11 @@ export default function EthTransfer(props: ImxProps) {
     },
   ]);
   const addInput = () => {
-    const updateDate2 = [
+    const updateDate = [
       ...EthTransferData,
       { type: ETHTokenType.ETH, amount: "", toAddress: "" },
     ];
-    setEthTransferData(updateDate2);
+    setEthTransferData(updateDate);
   };
 
   const removeInput = () => {
@@ -49,11 +51,11 @@ export default function EthTransfer(props: ImxProps) {
     let updateData = [...EthTransferData];
     for (let i = 0; i < updateData.length; i++) {
       if (event.target.name === "wallet") {
-        if (event.target.id === "Wallet-ID" + updateData[i].toAddress) {
+        if (event.target.id === "Wallet-ID" + i) {
           updateData[i].toAddress = event.target.value;
         }
-      } else if (event.target.name === "Etherium") {
-        if (event.target.id === "Etherium-ID" + updateData[i].toAddress) {
+      } else if (event.target.name === "Ethereum") {
+        if (event.target.id === "Ethereum-ID" + i) {
           updateData[i].amount = event.target.value;
         }
       }
@@ -61,42 +63,51 @@ export default function EthTransfer(props: ImxProps) {
 
     setEthTransferData(updateData);
   };
-  //ToDo: Eindeutigkeit von toAddress?
-  const addInputElements = EthTransferData.map(({ amount, toAddress }) => (
-    <div className="InputETH">
-      <TextField
-        id={"Wallet-ID" + toAddress}
-        label="Wallet-ID"
-        onChange={handleChange}
-        name="wallet"
-        variant="outlined"
-        value={toAddress === "" ? "" : toAddress}
-      />
 
-      <TextField
-        id={"Etherium-ID" + toAddress}
-        label="Etherium"
-        onChange={handleChange}
-        variant="outlined"
-        name="Etherium"
-        value={amount === "" ? "" : amount}
-      />
-    </div>
-  ));
+  const addInputElements = EthTransferData.map(
+    ({ amount, toAddress }, key: number) => (
+      <div className="InputETH">
+        <TextField
+          id={"Wallet-ID" + key}
+          label="Wallet-ID"
+          onChange={handleChange}
+          name="wallet"
+          variant="outlined"
+          value={toAddress === "" ? "" : toAddress}
+        />
+
+        <TextField
+          id={"Ethereum-ID" + key}
+          label="Ethereum"
+          onChange={handleChange}
+          variant="outlined"
+          name="Ethereum"
+          value={amount === "" ? "" : amount}
+        />
+      </div>
+    )
+  );
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // @ts-ignore
-    Papa.parse(event.target.files[0], {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results: { data: any[] }) => {
-        let data = results.data.map((d: any) => ({
-          toAddress: d.toAddress,
-          amount: d.amount,
-          type: ETHTokenType.ETH,
-        }));
-        setEthTransferData(data);
-      },
-    });
+    try {
+      // @ts-ignore
+      Papa.parse(event.target.files[0], {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          // @ts-ignore
+          let data = results.data.map((d: any) => ({
+            toAddress: d.toAddress,
+            amount: d.amount,
+            type: ETHTokenType.ETH,
+          }));
+          // @ts-ignore
+
+          setEthTransferData(data);
+        },
+      });
+    } catch (e) {
+      console.log(`Error while depositing ETH:${e}`);
+    }
     setFormValues((prevFormValues) => ({
       ...prevFormValues,
       file: event.target.files ? event.target.files[0] : null,
@@ -104,7 +115,11 @@ export default function EthTransfer(props: ImxProps) {
   };
 
   function transferEth() {
-    props.imxLink.transfer(EthTransferData);
+    try {
+      props.imxLink.transfer(EthTransferData);
+    } catch (e) {
+      console.log(`Error while depositing ETH:${e}`);
+    }
   }
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
@@ -137,6 +152,17 @@ export default function EthTransfer(props: ImxProps) {
                 hidden
               />
             </Button>
+            <a
+              href={EthTemplate}
+              rel="noreferrer"
+              download="EthereumTransferTemplate"
+              target="_blank"
+              style={{ textDecoration: "none" }}
+            >
+              <Button size="large" variant="contained" component="label">
+                Get Template
+              </Button>
+            </a>
           </div>
           <div className="NFT-Items">
             {addInputElements}
