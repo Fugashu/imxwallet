@@ -14,7 +14,7 @@ interface HomeWallet {
 const Home = (props: HomeWallet) => {
   async function launchMoonpay() {
     //TODO not available?
-    // @ts-ignore
+
     await props.imxLink.fiatToCrypto({ cryptoCurrencies: ["ETH"] });
   }
   return (
