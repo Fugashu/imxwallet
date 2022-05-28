@@ -125,8 +125,15 @@ export default function BatchTransfer(props: ImxProps) {
             type: ERC721TokenType.ERC721,
           }));
           // @ts-ignore
-
-          setAllNftData(data);
+          if (
+            allNftData[0].toAddress === "" &&
+            allNftData[0].tokenAddress === "" &&
+            allNftData[0].tokenId === ""
+          ) {
+            setAllNftData(data);
+          } else {
+            setAllNftData(allNftData.concat(data));
+          }
         },
       });
     } catch (e) {
@@ -138,7 +145,7 @@ export default function BatchTransfer(props: ImxProps) {
     }));
   };
 
-  function batchNftTransfer() {
+  function transferNft() {
     try {
       props.imxLink.transfer(allNftData);
     } catch (e) {
@@ -149,8 +156,16 @@ export default function BatchTransfer(props: ImxProps) {
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
     // Preventing the page from reloading
     event.preventDefault();
+    setAllNftData(
+      allNftData.filter(
+        (element) =>
+          element.toAddress != "" &&
+          element.tokenId != "" &&
+          element.tokenAddress != ""
+      )
+    );
 
-    batchNftTransfer();
+    transferNft();
   };
 
   return (

@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
+import { ERC20TokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import { TextField } from "@mui/material";
 import "./styles.css";
 import Papa from "papaparse";
 // @ts-ignore
-import EthTemplate from "../../assets/csv_templates/EthereumTransferTemplate.csv";
 
+import ERC20Template from "../../assets/csv_templates/ERC20TransferTemplate.csv";
+import { getSymbolForToken } from "../Bridging/BackendCalls";
 interface PostData {
   title: string;
   body: string;
@@ -18,54 +19,69 @@ interface ImxProps {
   walletAddress: string;
   apiClient: ImmutableXClient;
   imxLink: Link;
+  apiAddress: string;
 }
 
-export default function EthTransfer(props: ImxProps) {
+export default function ERC20Transfer(props: ImxProps) {
   const [formValues, setFormValues] = useState<PostData>({
     title: "",
     body: "",
     file: null,
   });
 
-  const [EthTransferData, setEthTransferData] = useState([
+  const [ERC20TransferData, setERC20TransferData] = useState([
     {
-      type: ETHTokenType.ETH,
+      type: ERC20TokenType.ERC20,
       amount: "",
+      symbol: "",
+
+      tokenAddress: "",
       toAddress: "",
     },
   ]);
   const addInput = () => {
-    const updateDate = [
-      ...EthTransferData,
-      { type: ETHTokenType.ETH, amount: "", toAddress: "" },
+    const updateData = [
+      ...ERC20TransferData,
+      {
+        type: ERC20TokenType.ERC20,
+        amount: "",
+        symbol: "",
+        tokenAddress: "",
+        toAddress: "",
+      },
     ];
-    setEthTransferData(updateDate);
-  };
 
+    // @ts-ignore
+    setERC20TransferData(updateData);
+  };
   const removeInput = () => {
-    EthTransferData.pop();
-    setEthTransferData([...EthTransferData]);
+    ERC20TransferData.pop();
+    setERC20TransferData([...ERC20TransferData]);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let updateData = [...EthTransferData];
+    let updateData = [...ERC20TransferData];
+
     for (let i = 0; i < updateData.length; i++) {
       if (event.target.name === "wallet") {
         if (event.target.id === "Wallet-ID" + i) {
           updateData[i].toAddress = event.target.value;
         }
-      } else if (event.target.name === "Ethereum") {
-        if (event.target.id === "Ethereum-ID" + i) {
+      } else if (event.target.name === "ERC20") {
+        if (event.target.id === "ERC20-ID" + i) {
           updateData[i].amount = event.target.value;
+        }
+      } else if (event.target.name === "contract") {
+        if (event.target.id === "Contract-ID" + i) {
+          updateData[i].tokenAddress = event.target.value;
         }
       }
     }
 
-    setEthTransferData(updateData);
+    setERC20TransferData(updateData);
   };
-
-  const addInputElements = EthTransferData.map(
-    ({ amount, toAddress }, key: number) => (
+  const addInputElements = ERC20TransferData.map(
+    ({ amount, toAddress, tokenAddress }, key: number) => (
       <div className="InputETH">
         <TextField
           id={"Wallet-ID" + key}
@@ -77,12 +93,20 @@ export default function EthTransfer(props: ImxProps) {
         />
 
         <TextField
-          id={"Ethereum-ID" + key}
-          label="Ethereum"
+          id={"ERC20-ID" + key}
+          label="ERC20"
           onChange={handleChange}
           variant="outlined"
-          name="Ethereum"
+          name="ERC20"
           value={amount === "" ? "" : amount}
+        />
+        <TextField
+          id={"Contract-ID" + key}
+          label="Contract-ID"
+          onChange={handleChange}
+          variant="outlined"
+          name="contract"
+          value={tokenAddress === "" ? "" : tokenAddress}
         />
       </div>
     )
@@ -98,21 +122,24 @@ export default function EthTransfer(props: ImxProps) {
           let data = results.data.map((d: any) => ({
             toAddress: d.toAddress,
             amount: d.amount,
-            type: ETHTokenType.ETH,
+            tokenAddress: d.tokenAddress,
+            type: ERC20TokenType.ERC20,
+            symbol: "",
           }));
-          // @ts-ignore
+
           if (
-            EthTransferData[0].amount === "" &&
-            EthTransferData[0].toAddress === ""
+            ERC20TransferData[0].amount === "" &&
+            ERC20TransferData[0].toAddress === "" &&
+            ERC20TransferData[0].tokenAddress === ""
           ) {
-            setEthTransferData(data);
+            setERC20TransferData(data);
           } else {
-            setEthTransferData(EthTransferData.concat(data));
+            setERC20TransferData(ERC20TransferData.concat(data));
           }
         },
       });
     } catch (e) {
-      console.log(`Error while depositing ETH:${e}`);
+      console.log(`Error while depositing:${e}`);
     }
     setFormValues((prevFormValues) => ({
       ...prevFormValues,
@@ -120,31 +147,37 @@ export default function EthTransfer(props: ImxProps) {
     }));
   };
 
-  function transferEth() {
+  function transferERC20() {
     try {
-      props.imxLink.transfer(EthTransferData);
+      // @ts-ignore
+      getSymbolForToken(props.apiAddress, ERC20TransferData);
+      // @ts-ignore
+      props.imxLink.transfer(ERC20TransferData);
     } catch (e) {
-      console.log(`Error while depositing ETH:${e}`);
+      console.log(`Error while depositing:${e}`);
     }
   }
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
-    // Preventing the page from reloading
     event.preventDefault();
-    setEthTransferData(
-      EthTransferData.filter(
-        (element) => element.toAddress != "" && element.amount != ""
+
+    setERC20TransferData(
+      ERC20TransferData.filter(
+        (element) =>
+          element.toAddress != "" &&
+          element.amount != "" &&
+          element.tokenAddress != ""
       )
     );
 
-    transferEth();
+    transferERC20();
   };
 
   return (
     <form onSubmit={submitForm}>
       <div className="Uploader">
         <div className="deposit-withdraw-section">
-          <h1>Ethereum Selection:</h1>
+          <h1>ERC20 Selection:</h1>
           <div className="deposit-withdraw-group">
             <TextField
               id="outlined-basic"
@@ -164,8 +197,8 @@ export default function EthTransfer(props: ImxProps) {
               />
             </Button>
             <a
-              href={EthTemplate}
-              download="EthereumTransferTemplate"
+              href={ERC20Template}
+              download="NftTransferTemplate"
               target="_blank"
               style={{ textDecoration: "none" }}
             >
