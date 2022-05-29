@@ -176,6 +176,7 @@ export default function ERC20Transfer(props: ImxProps) {
         />
         <TextField
           id={"Contract-ID" + key}
+          className="text-field"
           label="Token Address"
           onChange={handleChange}
           variant="outlined"
@@ -307,6 +308,7 @@ export default function ERC20Transfer(props: ImxProps) {
           <h1>ERC20 Selection:</h1>
           <div className="deposit-withdraw-group">
             <TextField
+              className="text-field"
               id="outlined-basic"
               label="Selected File: "
               variant="outlined"

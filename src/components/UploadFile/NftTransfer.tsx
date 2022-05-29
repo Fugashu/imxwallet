@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { ERC721TokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import { TextField } from "@mui/material";
@@ -25,7 +24,7 @@ export default function BatchTransfer(props: ImxProps) {
     body: "",
     file: null,
   });
-
+  const [applyDone, setApplyDone] = useState(false);
   const [allNftData, setAllNftData] = useState([
     {
       type: ERC721TokenType.ERC721, // Must be of type ERC721
@@ -36,6 +35,7 @@ export default function BatchTransfer(props: ImxProps) {
   ]);
 
   const addInput = () => {
+    setApplyDone(false);
     const updateData = [
       ...allNftData,
       {
@@ -52,10 +52,12 @@ export default function BatchTransfer(props: ImxProps) {
 
   const removeInput = () => {
     allNftData.pop();
+    setApplyDone(false);
     setAllNftData([...allNftData]);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setApplyDone(false);
     let updateData = [...allNftData];
 
     for (let i = 0; i < updateData.length; i++) {
@@ -82,29 +84,136 @@ export default function BatchTransfer(props: ImxProps) {
       <div className="InputNFT" key={key}>
         <TextField
           id={"Wallet-ID" + key}
+          className="text-field"
           label="Wallet Address"
           onChange={handleChange}
           name="wallet"
           value={toAddress === "" ? "" : toAddress}
+          sx={
+            toAddress === ""
+              ? {
+                  "& label.Mui-focused": {
+                    color: "red",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "red",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "red",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "red",
+                    },
+                  },
+                }
+              : {
+                  "& label.Mui-focused": {
+                    color: "",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "",
+                    },
+                  },
+                }
+          }
           variant="outlined"
         />
 
         <TextField
           id={"Token-ID" + key}
-          label="NFT-Token"
+          label="Token ID"
           onChange={handleChange}
           variant="outlined"
           name="token"
           value={tokenId === "" ? "" : tokenId}
+          sx={
+            tokenId === ""
+              ? {
+                  "& label.Mui-focused": {
+                    color: "red",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "red",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "red",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "red",
+                    },
+                  },
+                }
+              : {
+                  "& label.Mui-focused": {
+                    color: "",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "",
+                    },
+                  },
+                }
+          }
         />
 
         <TextField
           id={"Contract-ID" + key}
-          label="Contract-ID"
+          className="text-field"
+          label="Token Address"
           onChange={handleChange}
           variant="outlined"
           name="contract"
           value={tokenAddress === "" ? "" : tokenAddress}
+          sx={
+            tokenAddress === ""
+              ? {
+                  "& label.Mui-focused": {
+                    color: "red",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "red",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "red",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "red",
+                    },
+                  },
+                }
+              : {
+                  "& label.Mui-focused": {
+                    color: "",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "",
+                    },
+                  },
+                }
+          }
         />
       </div>
     )
@@ -124,7 +233,8 @@ export default function BatchTransfer(props: ImxProps) {
             tokenAddress: d.tokenAddress,
             type: ERC721TokenType.ERC721,
           }));
-          // @ts-ignore
+          setApplyDone(false);
+
           if (
             allNftData[0].toAddress === "" &&
             allNftData[0].tokenAddress === "" &&
@@ -137,35 +247,56 @@ export default function BatchTransfer(props: ImxProps) {
         },
       });
     } catch (e) {
-      console.log(`Error while depositing:${e}`);
+      console.log(`Error while loading .csv File:${e}`);
     }
     setFormValues((prevFormValues) => ({
       ...prevFormValues,
       file: event.target.files ? event.target.files[0] : null,
     }));
   };
+  function apply() {
+    setAllNftData(
+      allNftData.filter(
+        (element) =>
+          element.toAddress !== "" ||
+          element.tokenId !== "" ||
+          element.tokenAddress !== ""
+      )
+    );
 
+    setApplyDone(true);
+  }
   function transferNft() {
     try {
       props.imxLink.transfer(allNftData);
     } catch (e) {
-      console.log(`Error while depositing:${e}`);
+      alert("You have to connect to your wallet first!");
+      console.log(`Error while transfer:${e}`);
     }
   }
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
     // Preventing the page from reloading
     event.preventDefault();
-    setAllNftData(
-      allNftData.filter(
-        (element) =>
-          element.toAddress !== "" &&
-          element.tokenId !== "" &&
-          element.tokenAddress !== ""
-      )
-    );
-
-    transferNft();
+    let allInputsCorrect = true;
+    for (let i = 0; i < allNftData.length; i++) {
+      if (
+        allNftData[i].toAddress === "" ||
+        allNftData[i].tokenId === "" ||
+        allNftData[i].tokenAddress === ""
+      ) {
+        alert("There is at least one missing input!");
+        allInputsCorrect = false;
+        setApplyDone(false);
+        break;
+      }
+    }
+    if (allInputsCorrect) {
+      transferNft();
+      setApplyDone(false);
+    } else {
+      setApplyDone(false);
+    }
   };
 
   return (
@@ -175,6 +306,7 @@ export default function BatchTransfer(props: ImxProps) {
           <h1>NFT Selection:</h1>
           <div className="deposit-withdraw-group">
             <TextField
+              className="text-field"
               id="outlined-basic"
               label="Selected File: "
               variant="outlined"
@@ -227,11 +359,31 @@ export default function BatchTransfer(props: ImxProps) {
             </Button>
           </div>
 
-          <Box marginY={3}>
-            <Button size="large" variant="contained" type="submit">
+          <Button
+            size="large"
+            variant="contained"
+            component="label"
+            onClick={apply}
+            id="Apply"
+          >
+            Apply
+          </Button>
+
+          {applyDone ? (
+            <Button size="large" variant="contained" type="submit" id="Submit">
               Submit
             </Button>
-          </Box>
+          ) : (
+            <Button
+              size="large"
+              variant="contained"
+              type="button"
+              id="Submit"
+              disabled={true}
+            >
+              Submit
+            </Button>
+          )}
         </div>
       </div>
     </form>

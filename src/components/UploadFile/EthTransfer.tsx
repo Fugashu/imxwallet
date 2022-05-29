@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { ETHTokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import { TextField } from "@mui/material";
@@ -26,7 +25,7 @@ export default function EthTransfer(props: ImxProps) {
     body: "",
     file: null,
   });
-
+  const [applyDone, setApplyDone] = useState(false);
   const [EthTransferData, setEthTransferData] = useState([
     {
       type: ETHTokenType.ETH,
@@ -35,6 +34,7 @@ export default function EthTransfer(props: ImxProps) {
     },
   ]);
   const addInput = () => {
+    setApplyDone(false);
     const updateDate = [
       ...EthTransferData,
       { type: ETHTokenType.ETH, amount: "", toAddress: "" },
@@ -44,10 +44,12 @@ export default function EthTransfer(props: ImxProps) {
 
   const removeInput = () => {
     EthTransferData.pop();
+    setApplyDone(false);
     setEthTransferData([...EthTransferData]);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setApplyDone(false);
     let updateData = [...EthTransferData];
     for (let i = 0; i < updateData.length; i++) {
       if (event.target.name === "wallet") {
@@ -66,23 +68,94 @@ export default function EthTransfer(props: ImxProps) {
 
   const addInputElements = EthTransferData.map(
     ({ amount, toAddress }, key: number) => (
-      <div className="InputETH">
+      <div className="InputETH" key={key}>
         <TextField
+          className="text-field"
           id={"Wallet-ID" + key}
-          label="Wallet-ID"
+          label="Wallet Address"
           onChange={handleChange}
           name="wallet"
           variant="outlined"
           value={toAddress === "" ? "" : toAddress}
+          sx={
+            toAddress === ""
+              ? {
+                  "& label.Mui-focused": {
+                    color: "red",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "red",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "red",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "red",
+                    },
+                  },
+                }
+              : {
+                  "& label.Mui-focused": {
+                    color: "",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "",
+                    },
+                  },
+                }
+          }
         />
 
         <TextField
           id={"Ethereum-ID" + key}
-          label="Ethereum"
+          label="Amount(ETH)"
           onChange={handleChange}
           variant="outlined"
           name="Ethereum"
           value={amount === "" ? "" : amount}
+          sx={
+            amount === ""
+              ? {
+                  "& label.Mui-focused": {
+                    color: "red",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "red",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "red",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "red",
+                    },
+                  },
+                }
+              : {
+                  "& label.Mui-focused": {
+                    color: "",
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "",
+                    },
+                  },
+                }
+          }
         />
       </div>
     )
@@ -100,6 +173,7 @@ export default function EthTransfer(props: ImxProps) {
             amount: d.amount,
             type: ETHTokenType.ETH,
           }));
+          setApplyDone(false);
           // @ts-ignore
           if (
             EthTransferData[0].amount === "" &&
@@ -119,11 +193,21 @@ export default function EthTransfer(props: ImxProps) {
       file: event.target.files ? event.target.files[0] : null,
     }));
   };
+  function apply() {
+    setEthTransferData(
+      EthTransferData.filter(
+        (element) => element.toAddress !== "" || element.amount !== ""
+      )
+    );
+
+    setApplyDone(true);
+  }
 
   function transferEth() {
     try {
       props.imxLink.transfer(EthTransferData);
     } catch (e) {
+      alert("You have to connect to your wallet first!");
       console.log(`Error while depositing ETH:${e}`);
     }
   }
@@ -131,13 +215,24 @@ export default function EthTransfer(props: ImxProps) {
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
     // Preventing the page from reloading
     event.preventDefault();
-    setEthTransferData(
-      EthTransferData.filter(
-        (element) => element.toAddress !== "" && element.amount !== ""
-      )
-    );
-
-    transferEth();
+    let allInputsCorrect = true;
+    for (let i = 0; i < EthTransferData.length; i++) {
+      if (
+        EthTransferData[i].toAddress === "" ||
+        EthTransferData[i].amount === ""
+      ) {
+        alert("There is at least one missing input!");
+        allInputsCorrect = false;
+        setApplyDone(false);
+        break;
+      }
+    }
+    if (allInputsCorrect) {
+      transferEth();
+      setApplyDone(false);
+    } else {
+      setApplyDone(false);
+    }
   };
 
   return (
@@ -147,6 +242,7 @@ export default function EthTransfer(props: ImxProps) {
           <h1>Ethereum Selection:</h1>
           <div className="deposit-withdraw-group">
             <TextField
+              className="text-field"
               id="outlined-basic"
               label="Selected File: "
               variant="outlined"
@@ -198,12 +294,31 @@ export default function EthTransfer(props: ImxProps) {
               Remove Item
             </Button>
           </div>
+          <Button
+            size="large"
+            variant="contained"
+            component="label"
+            onClick={apply}
+            id="Apply"
+          >
+            Apply
+          </Button>
 
-          <Box marginY={3}>
-            <Button size="large" variant="contained" type="submit">
+          {applyDone ? (
+            <Button size="large" variant="contained" type="submit" id="Submit">
               Submit
             </Button>
-          </Box>
+          ) : (
+            <Button
+              size="large"
+              variant="contained"
+              type="button"
+              id="Submit"
+              disabled={true}
+            >
+              Submit
+            </Button>
+          )}
         </div>
       </div>
     </form>
