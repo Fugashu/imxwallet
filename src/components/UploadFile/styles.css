@@ -39,6 +39,16 @@
     margin-left: 10px;
 
 }
+#Submit{
+    margin-top: 10px;
+    margin-left: 10px;
+
+}
+#Apply{
+    margin-top: 10px;
+    margin-right: 42px;
+
+  }
 .InputNFT{
     margin-top: 15px;
     margin-bottom: 15px;
@@ -46,4 +56,7 @@
 .InputETH{
     margin-top: 15px;
     margin-bottom: 15px;
+}
+.input-border {
+    border-color: #FF0000 !important;
 }

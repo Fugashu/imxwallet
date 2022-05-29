@@ -82,7 +82,7 @@ export default function BatchTransfer(props: ImxProps) {
       <div className="InputNFT">
         <TextField
           id={"Wallet-ID" + key}
-          label="Wallet-ID"
+          label="Wallet Address"
           onChange={handleChange}
           name="wallet"
           value={toAddress === "" ? "" : toAddress}
