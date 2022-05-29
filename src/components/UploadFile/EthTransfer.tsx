@@ -101,8 +101,14 @@ export default function EthTransfer(props: ImxProps) {
             type: ETHTokenType.ETH,
           }));
           // @ts-ignore
-
-          setEthTransferData(data);
+          if (
+            EthTransferData[0].amount === "" &&
+            EthTransferData[0].toAddress === ""
+          ) {
+            setEthTransferData(data);
+          } else {
+            setEthTransferData(EthTransferData.concat(data));
+          }
         },
       });
     } catch (e) {
@@ -125,6 +131,11 @@ export default function EthTransfer(props: ImxProps) {
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
     // Preventing the page from reloading
     event.preventDefault();
+    setEthTransferData(
+      EthTransferData.filter(
+        (element) => element.toAddress != "" && element.amount != ""
+      )
+    );
 
     transferEth();
   };

@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import Papa from "papaparse";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { ERC721TokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
+import { ERC20TokenType, ImmutableXClient, Link } from "@imtbl/imx-sdk";
 import { TextField } from "@mui/material";
 import "./styles.css";
+import Papa from "papaparse";
 // @ts-ignore
-import NftTemplate from "../../assets/csv_templates/NftTransferTemplate.csv";
+
+import ERC20Template from "../../assets/csv_templates/ERC20TransferTemplate.csv";
+import { getSymbolForToken } from "../Bridging/BackendCalls";
 interface PostData {
   title: string;
   body: string;
@@ -17,55 +19,57 @@ interface ImxProps {
   walletAddress: string;
   apiClient: ImmutableXClient;
   imxLink: Link;
+  apiAddress: string;
 }
 
-export default function BatchTransfer(props: ImxProps) {
+export default function ERC20Transfer(props: ImxProps) {
   const [formValues, setFormValues] = useState<PostData>({
     title: "",
     body: "",
     file: null,
   });
 
-  const [allNftData, setAllNftData] = useState([
+  const [ERC20TransferData, setERC20TransferData] = useState([
     {
-      type: ERC721TokenType.ERC721, // Must be of type ERC721
-      tokenId: "", // the token ID
-      tokenAddress: "", // the collection address / contract address this token belongs to
-      toAddress: "", // the wallet address this token is being transferred to
+      type: ERC20TokenType.ERC20,
+      amount: "",
+      symbol: "",
+
+      tokenAddress: "",
+      toAddress: "",
     },
   ]);
-
   const addInput = () => {
     const updateData = [
-      ...allNftData,
+      ...ERC20TransferData,
       {
-        type: ERC721TokenType.ERC721,
-        tokenId: "",
+        type: ERC20TokenType.ERC20,
+        amount: "",
+        symbol: "",
         tokenAddress: "",
         toAddress: "",
       },
     ];
 
     // @ts-ignore
-    setAllNftData(updateData);
+    setERC20TransferData(updateData);
   };
-
   const removeInput = () => {
-    allNftData.pop();
-    setAllNftData([...allNftData]);
+    ERC20TransferData.pop();
+    setERC20TransferData([...ERC20TransferData]);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let updateData = [...allNftData];
+    let updateData = [...ERC20TransferData];
 
     for (let i = 0; i < updateData.length; i++) {
       if (event.target.name === "wallet") {
         if (event.target.id === "Wallet-ID" + i) {
           updateData[i].toAddress = event.target.value;
         }
-      } else if (event.target.name === "token") {
-        if (event.target.id === "Token-ID" + i) {
-          updateData[i].tokenId = event.target.value;
+      } else if (event.target.name === "ERC20") {
+        if (event.target.id === "ERC20-ID" + i) {
+          updateData[i].amount = event.target.value;
         }
       } else if (event.target.name === "contract") {
         if (event.target.id === "Contract-ID" + i) {
@@ -74,30 +78,28 @@ export default function BatchTransfer(props: ImxProps) {
       }
     }
 
-    setAllNftData(updateData);
+    setERC20TransferData(updateData);
   };
-
-  const addInputElements = allNftData.map(
-    ({ tokenAddress, tokenId, toAddress }, key: number) => (
-      <div className="InputNFT">
+  const addInputElements = ERC20TransferData.map(
+    ({ amount, toAddress, tokenAddress }, key: number) => (
+      <div className="InputETH">
         <TextField
           id={"Wallet-ID" + key}
           label="Wallet-ID"
           onChange={handleChange}
           name="wallet"
-          value={toAddress === "" ? "" : toAddress}
           variant="outlined"
+          value={toAddress === "" ? "" : toAddress}
         />
 
         <TextField
-          id={"Token-ID" + key}
-          label="NFT-Token"
+          id={"ERC20-ID" + key}
+          label="ERC20"
           onChange={handleChange}
           variant="outlined"
-          name="token"
-          value={tokenId === "" ? "" : tokenId}
+          name="ERC20"
+          value={amount === "" ? "" : amount}
         />
-
         <TextField
           id={"Contract-ID" + key}
           label="Contract-ID"
@@ -109,7 +111,6 @@ export default function BatchTransfer(props: ImxProps) {
       </div>
     )
   );
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       // @ts-ignore
@@ -119,20 +120,21 @@ export default function BatchTransfer(props: ImxProps) {
         complete: (results) => {
           // @ts-ignore
           let data = results.data.map((d: any) => ({
-            tokenId: d.tokenId,
             toAddress: d.toAddress,
+            amount: d.amount,
             tokenAddress: d.tokenAddress,
-            type: ERC721TokenType.ERC721,
+            type: ERC20TokenType.ERC20,
+            symbol: "",
           }));
-          // @ts-ignore
+
           if (
-            allNftData[0].toAddress === "" &&
-            allNftData[0].tokenAddress === "" &&
-            allNftData[0].tokenId === ""
+            ERC20TransferData[0].amount === "" &&
+            ERC20TransferData[0].toAddress === "" &&
+            ERC20TransferData[0].tokenAddress === ""
           ) {
-            setAllNftData(data);
+            setERC20TransferData(data);
           } else {
-            setAllNftData(allNftData.concat(data));
+            setERC20TransferData(ERC20TransferData.concat(data));
           }
         },
       });
@@ -145,34 +147,37 @@ export default function BatchTransfer(props: ImxProps) {
     }));
   };
 
-  function transferNft() {
+  function transferERC20() {
     try {
-      props.imxLink.transfer(allNftData);
+      // @ts-ignore
+      getSymbolForToken(props.apiAddress, ERC20TransferData);
+      // @ts-ignore
+      props.imxLink.transfer(ERC20TransferData);
     } catch (e) {
       console.log(`Error while depositing:${e}`);
     }
   }
 
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
-    // Preventing the page from reloading
     event.preventDefault();
-    setAllNftData(
-      allNftData.filter(
+
+    setERC20TransferData(
+      ERC20TransferData.filter(
         (element) =>
           element.toAddress != "" &&
-          element.tokenId != "" &&
+          element.amount != "" &&
           element.tokenAddress != ""
       )
     );
 
-    transferNft();
+    transferERC20();
   };
 
   return (
     <form onSubmit={submitForm}>
       <div className="Uploader">
         <div className="deposit-withdraw-section">
-          <h1>NFT Selection:</h1>
+          <h1>ERC20 Selection:</h1>
           <div className="deposit-withdraw-group">
             <TextField
               id="outlined-basic"
@@ -192,8 +197,7 @@ export default function BatchTransfer(props: ImxProps) {
               />
             </Button>
             <a
-              href={NftTemplate}
-              rel="noreferrer"
+              href={ERC20Template}
               download="NftTransferTemplate"
               target="_blank"
               style={{ textDecoration: "none" }}

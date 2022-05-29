@@ -120,6 +120,7 @@ function App() {
               walletAddress={walletAddress}
               apiClient={apiClient}
               imxLink={imxLink}
+              apiAddress={apiEndpointAddress}
             />
           }
         />
