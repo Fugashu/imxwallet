@@ -79,7 +79,7 @@ export default function BatchTransfer(props: ImxProps) {
 
   const addInputElements = allNftData.map(
     ({ tokenAddress, tokenId, toAddress }, key: number) => (
-      <div className="InputNFT">
+      <div className="InputNFT" key={key}>
         <TextField
           id={"Wallet-ID" + key}
           label="Wallet Address"

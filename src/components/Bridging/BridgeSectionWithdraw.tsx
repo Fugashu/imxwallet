@@ -140,6 +140,7 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
               onChange={(e) => setPrepareERC20Amount(e.target.value)}
             />
             <TextField
+              className="text-field"
               id="outlined-basic"
               label="Token Address:"
               variant="outlined"
@@ -176,6 +177,7 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
             <div className="deposit-withdraw-group">
               Collection address you want to withdraw NFTs:
               <TextField
+                className="text-field"
                 id="outlined-basic"
                 label="Collection Address:"
                 variant="outlined"

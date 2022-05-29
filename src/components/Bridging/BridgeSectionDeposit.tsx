@@ -120,6 +120,7 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
           <div className="deposit-withdraw-group">
             Collection address you want to deposit NFTs:
             <TextField
+              className="text-field"
               id="outlined-basic"
               label="Collection Address:"
               variant="outlined"

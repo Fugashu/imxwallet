@@ -85,8 +85,9 @@ export default function ERC20Transfer(props: ImxProps) {
 
   const addInputElements = ERC20TransferData.map(
     ({ amount, toAddress, tokenAddress }, key: number) => (
-      <div className="InputETH">
+      <div className="InputETH" key={key}>
         <TextField
+          className="text-field"
           id={"Wallet-ID" + key}
           label="Wallet Address"
           onChange={handleChange}
