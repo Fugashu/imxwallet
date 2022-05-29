@@ -159,9 +159,9 @@ export default function BatchTransfer(props: ImxProps) {
     setAllNftData(
       allNftData.filter(
         (element) =>
-          element.toAddress != "" &&
-          element.tokenId != "" &&
-          element.tokenAddress != ""
+          element.toAddress !== "" &&
+          element.tokenId !== "" &&
+          element.tokenAddress !== ""
       )
     );
 

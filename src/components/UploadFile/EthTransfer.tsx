@@ -133,7 +133,7 @@ export default function EthTransfer(props: ImxProps) {
     event.preventDefault();
     setEthTransferData(
       EthTransferData.filter(
-        (element) => element.toAddress != "" && element.amount != ""
+        (element) => element.toAddress !== "" && element.amount !== ""
       )
     );
 

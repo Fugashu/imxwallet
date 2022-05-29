@@ -324,6 +324,7 @@ export default function ERC20Transfer(props: ImxProps) {
               />
             </Button>
             <a
+              rel="noreferrer"
               href={ERC20Template}
               download="NftTransferTemplate"
               target="_blank"
