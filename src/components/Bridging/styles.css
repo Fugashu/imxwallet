@@ -21,7 +21,7 @@
 }
 
 .deposit-withdraw-section{
-    color: #0E1118;
+    color: white;
     font-size: 14pt;
    /* background-color: burlywood;*/
     border-radius: 30px;
@@ -38,9 +38,8 @@
 }
 
 .inventory-item{
-    border: 4px solid #777777;
+    border: 4px solid #23C6DD;
     border-radius: 5px;
-    background: tan;
 }
 
 .text-field{
