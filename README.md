@@ -9,6 +9,7 @@ The hosted [website](https://imxwallet.tools) provides useful wallet actions for
 
 Connect your wallet to get started!
 
+Special thanks to [Niklas Schneider](https://github.com/NiklasSchn) for his Batch Transfer contributions.
 ## Features
 Feel free to explore the features on your own by simply connecting your wallet to either Ropsten or Mainnet.
 
