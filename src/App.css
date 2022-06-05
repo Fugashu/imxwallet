@@ -1,6 +1,6 @@
 body{
   margin-top: 10px;
-  background: #282c34;
+  background: #0E1118;
 }
 .App {
   text-align: center;
@@ -19,7 +19,7 @@ body{
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #0E1118;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -50,5 +50,11 @@ body{
 
 .Uploader{
   margin-top: 20px;
+
 }
+h1{
+  color: white;
+}
+
+
 

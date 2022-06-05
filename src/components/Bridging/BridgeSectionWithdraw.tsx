@@ -119,12 +119,39 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
               variant="outlined"
               value={prepareETHAmount}
               onChange={(e) => setPrepareETHAmount(e.target.value)}
+              sx={{
+                "& label.Mui-focused": {
+                  color: "#23C6DD",
+                },
+                "& label.Mui-outlined": {
+                  color: "#23C6DD",
+                },
+
+                "& .MuiOutlinedInput-root": {
+                  "& > fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                },
+                "& .MuiInputBase-root": {
+                  color: "#23C6DD",
+                },
+                "& .MuiFormLabel-root": {
+                  color: "#23C6DD",
+                },
+              }}
             />
             <Button
               size="large"
               variant="contained"
               component="label"
               onClick={prepareWithdrawalETH}
+              sx={{ backgroundColor: "#23C6DD" }}
             >
               Prepare ETH Withdrawal
             </Button>
@@ -138,6 +165,32 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
               variant="outlined"
               value={prepareERC20Amount}
               onChange={(e) => setPrepareERC20Amount(e.target.value)}
+              sx={{
+                "& label.Mui-focused": {
+                  color: "#23C6DD",
+                },
+                "& label.Mui-outlined": {
+                  color: "#23C6DD",
+                },
+
+                "& .MuiOutlinedInput-root": {
+                  "& > fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                },
+                "& .MuiInputBase-root": {
+                  color: "#23C6DD",
+                },
+                "& .MuiFormLabel-root": {
+                  color: "#23C6DD",
+                },
+              }}
             />
             <TextField
               className="text-field"
@@ -146,12 +199,39 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
               variant="outlined"
               value={prepareERC20TokenAddr}
               onChange={(e) => setPrepareERC20TokenAddr(e.target.value)}
+              sx={{
+                "& label.Mui-focused": {
+                  color: "#23C6DD",
+                },
+                "& label.Mui-outlined": {
+                  color: "#23C6DD",
+                },
+
+                "& .MuiOutlinedInput-root": {
+                  "& > fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                },
+                "& .MuiInputBase-root": {
+                  color: "#23C6DD",
+                },
+                "& .MuiFormLabel-root": {
+                  color: "#23C6DD",
+                },
+              }}
             />
             <Button
               size="large"
               variant="contained"
               component="label"
               onClick={prepareWithdrawalERC20}
+              sx={{ backgroundColor: "#23C6DD" }}
             >
               Prepare ERC20 Withdrawal
             </Button>
@@ -183,12 +263,39 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
                 variant="outlined"
                 value={collectionAddress}
                 onChange={(e) => setCollectionAddress(e.target.value)}
+                sx={{
+                  "& label.Mui-focused": {
+                    color: "#23C6DD",
+                  },
+                  "& label.Mui-outlined": {
+                    color: "#23C6DD",
+                  },
+
+                  "& .MuiOutlinedInput-root": {
+                    "& > fieldset": {
+                      borderColor: "#23C6DD",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#23C6DD",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#23C6DD",
+                    },
+                  },
+                  "& .MuiInputBase-root": {
+                    color: "#23C6DD",
+                  },
+                  "& .MuiFormLabel-root": {
+                    color: "#23C6DD",
+                  },
+                }}
               />
               <Button
                 size="large"
                 variant="contained"
                 component="label"
                 onClick={fetchInventoryIMX}
+                sx={{ backgroundColor: "#23C6DD" }}
               >
                 Fetch Inventory
               </Button>
@@ -225,6 +332,7 @@ const BridgeSectionWithdraw = (props: BridgeSectionWithdrawInterface) => {
                     variant="contained"
                     component="label"
                     onClick={() => prepareWithdrawalNFT(item["token_id"])}
+                    sx={{ backgroundColor: "#23C6DD" }}
                   >
                     Prepare Withdrawal
                   </Button>

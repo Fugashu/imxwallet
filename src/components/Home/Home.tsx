@@ -39,6 +39,7 @@ const Home = (props: HomeWallet) => {
             variant="contained"
             component="label"
             onClick={launchMoonpay}
+            sx={{ backgroundColor: "#23C6DD" }}
           >
             Launch Moonpay
           </Button>

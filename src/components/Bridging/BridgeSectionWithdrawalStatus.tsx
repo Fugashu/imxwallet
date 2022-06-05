@@ -123,6 +123,7 @@ const BridgeSectionWithdrawalStatus = (
           variant="contained"
           component="label"
           onClick={loadWithdrawals}
+          sx={{ backgroundColor: "#23C6DD" }}
         >
           Reload Withdrawals
         </Button>
@@ -208,6 +209,7 @@ const BridgeSectionWithdrawalStatus = (
                         size="small"
                         variant="contained"
                         component="label"
+                        sx={{ backgroundColor: "#23C6DD" }}
                         onClick={() => {
                           item["token"]["type"] === "ERC721"
                             ? completeWithdrawalNFT(
