@@ -2,7 +2,7 @@
 
 
 # IMX WALLET TOOLS
-
+[![Netlify Status](https://api.netlify.com/api/v1/badges/a88fa905-7c56-48a9-becc-7f3e65a54b5a/deploy-status)](https://app.netlify.com/sites/amazing-sundae-532510/deploys)
 ## Description
 
 The hosted [website](https://imxwallet.tools) provides useful wallet actions for the ImmutableX Ecosystem.
