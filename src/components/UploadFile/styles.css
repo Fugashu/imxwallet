@@ -20,11 +20,12 @@
 }
 
 .deposit-withdraw-section{
-    color: #282c34;
+    color: #0E1118;
     font-size: 14pt;
     margin: 10px;
-    background-color: burlywood;
+   /* background-color: burlywood; */
     border-radius: 50px;
+    border: 1px #23C6DD;
 }
 
 #NFT-Token{
@@ -60,4 +61,6 @@
 
 .text-field{
     width: 500px;
+
+
 }

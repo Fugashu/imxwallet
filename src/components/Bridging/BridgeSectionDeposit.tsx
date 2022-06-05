@@ -89,6 +89,7 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
               variant="contained"
               component="label"
               onClick={depositNoParams}
+              sx={{ backgroundColor: "#23C6DD" }}
             >
               Deposit
             </Button>
@@ -125,6 +126,32 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
               label="Collection Address:"
               variant="outlined"
               value={collectionAddress}
+              sx={{
+                "& label.Mui-focused": {
+                  color: "#23C6DD",
+                },
+                "& label.Mui-outlined": {
+                  color: "#23C6DD",
+                },
+
+                "& .MuiOutlinedInput-root": {
+                  "& > fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#23C6DD",
+                  },
+                },
+                "& .MuiInputBase-root": {
+                  color: "#23C6DD",
+                },
+                "& .MuiFormLabel-root": {
+                  color: "#23C6DD",
+                },
+              }}
               onChange={(e) => setCollectionAddress(e.target.value)}
             />
             <Button
@@ -132,6 +159,7 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
               variant="contained"
               component="label"
               onClick={fetchInventoryETH}
+              sx={{ backgroundColor: "#23C6DD" }}
             >
               Fetch Inventory
             </Button>
@@ -166,6 +194,7 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
                   size="small"
                   variant="contained"
                   component="label"
+                  sx={{ backgroundColor: "#23C6DD" }}
                   onClick={() => depositNFT(item["token_id"])}
                 >
                   Deposit
