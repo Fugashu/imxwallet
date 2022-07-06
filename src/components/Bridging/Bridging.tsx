@@ -9,7 +9,6 @@ import {
 } from "@imtbl/imx-sdk";
 import React, { useEffect, useState } from "react";
 import BridgeSectionDeposit from "./BridgeSectionDeposit";
-import Button from "@mui/material/Button";
 import BridgeSectionWithdraw from "./BridgeSectionWithdraw";
 import BridgeSectionWithdrawalStatus from "./BridgeSectionWithdrawalStatus";
 interface BridgingProps {
