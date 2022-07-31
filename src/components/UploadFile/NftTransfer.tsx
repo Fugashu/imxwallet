@@ -115,28 +115,28 @@ export default function BatchTransfer(props: ImxProps) {
                 }
               : {
                   "& label.Mui-focused": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
                   "& label.Mui-outlined": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
 
                   "& .MuiOutlinedInput-root": {
                     "& > fieldset": {
-                      borderColor: "#23C6DD",
+                      borderColor: "#0072F5",
                     },
                     "&:hover fieldset": {
-                      borderColor: "#23C6DD",
+                      borderColor: "#0072F5",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: "#23C6DD",
+                      borderColor: "#0072F5",
                     },
                   },
                   "& .MuiInputBase-root": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
                   "& .MuiFormLabel-root": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
                 }
           }
@@ -176,28 +176,28 @@ export default function BatchTransfer(props: ImxProps) {
                 }
               : {
                   "& label.Mui-focused": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
                   "& label.Mui-outlined": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
 
                   "& .MuiOutlinedInput-root": {
                     "& > fieldset": {
-                      borderColor: "#23C6DD",
+                      borderColor: "#0072F5",
                     },
                     "&:hover fieldset": {
-                      borderColor: "#23C6DD",
+                      borderColor: "#0072F5",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: "#23C6DD",
+                      borderColor: "#0072F5",
                     },
                   },
                   "& .MuiInputBase-root": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
                   "& .MuiFormLabel-root": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
                 }
           }
@@ -237,28 +237,28 @@ export default function BatchTransfer(props: ImxProps) {
                 }
               : {
                   "& label.Mui-focused": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
                   "& label.Mui-outlined": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
 
                   "& .MuiOutlinedInput-root": {
                     "& > fieldset": {
-                      borderColor: "#23C6DD",
+                      borderColor: "#0072F5",
                     },
                     "&:hover fieldset": {
-                      borderColor: "#23C6DD",
+                      borderColor: "#0072F5",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: "#23C6DD",
+                      borderColor: "#0072F5",
                     },
                   },
                   "& .MuiInputBase-root": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
                   "& .MuiFormLabel-root": {
-                    color: "#23C6DD",
+                    color: "#0072F5",
                   },
                 }
           }
@@ -362,28 +362,28 @@ export default function BatchTransfer(props: ImxProps) {
               value={formValues.file?.name ?? "No File selected.."}
               sx={{
                 "& label.Mui-focused": {
-                  color: "#23C6DD",
+                  color: "#0072F5",
                 },
                 "& label.Mui-outlined": {
-                  color: "#23C6DD",
+                  color: "#0072F5",
                 },
 
                 "& .MuiOutlinedInput-root": {
                   "& > fieldset": {
-                    borderColor: "#23C6DD",
+                    borderColor: "#0072F5",
                   },
                   "&:hover fieldset": {
-                    borderColor: "#23C6DD",
+                    borderColor: "#0072F5",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#23C6DD",
+                    borderColor: "#0072F5",
                   },
                 },
                 "& .MuiInputBase-root": {
-                  color: "#23C6DD",
+                  color: "#0072F5",
                 },
                 "& .MuiFormLabel-root": {
-                  color: "#23C6DD",
+                  color: "#0072F5",
                 },
               }}
             />
@@ -392,7 +392,7 @@ export default function BatchTransfer(props: ImxProps) {
               size="large"
               variant="contained"
               component="label"
-              sx={{ backgroundColor: "#23C6DD" }}
+              sx={{ backgroundColor: "#0072F5" }}
             >
               Upload File
               <input
@@ -413,7 +413,7 @@ export default function BatchTransfer(props: ImxProps) {
                 size="large"
                 variant="contained"
                 component="label"
-                sx={{ backgroundColor: "#23C6DD" }}
+                sx={{ backgroundColor: "#0072F5" }}
               >
                 Get Template
               </Button>
@@ -428,7 +428,7 @@ export default function BatchTransfer(props: ImxProps) {
               component="label"
               onClick={addInput}
               id="AddItem"
-              sx={{ backgroundColor: "#23C6DD" }}
+              sx={{ backgroundColor: "#0072F5" }}
             >
               Add Item
             </Button>
@@ -439,7 +439,7 @@ export default function BatchTransfer(props: ImxProps) {
               component="label"
               onClick={removeInput}
               id="RemoveItem"
-              sx={{ backgroundColor: "#23C6DD" }}
+              sx={{ backgroundColor: "#0072F5" }}
             >
               Remove Item
             </Button>
@@ -451,7 +451,7 @@ export default function BatchTransfer(props: ImxProps) {
             component="label"
             onClick={apply}
             id="Apply"
-            sx={{ backgroundColor: "#23C6DD" }}
+            sx={{ backgroundColor: "#0072F5" }}
           >
             Apply
           </Button>
@@ -462,7 +462,7 @@ export default function BatchTransfer(props: ImxProps) {
               variant="contained"
               type="submit"
               id="Submit"
-              sx={{ backgroundColor: "#23C6DD" }}
+              sx={{ backgroundColor: "#0072F5" }}
             >
               Submit
             </Button>

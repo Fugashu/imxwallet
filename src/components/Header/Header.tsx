@@ -23,7 +23,7 @@ const Header = (props: NetworkSwitchFunctions) => {
           onClick={props.handleClickMainnet}
           variant="contained"
           component="label"
-          sx={{ backgroundColor: "#23C6DD" }}
+          sx={{ backgroundColor: "#0072F5" }}
         >
           Connect Mainnet
         </Button>
@@ -34,7 +34,7 @@ const Header = (props: NetworkSwitchFunctions) => {
           onClick={props.handleClickRopsten}
           variant="contained"
           component="label"
-          sx={{ backgroundColor: "#23C6DD" }}
+          sx={{ backgroundColor: "#0072F5" }}
         >
           Connect Ropsten
         </Button>
