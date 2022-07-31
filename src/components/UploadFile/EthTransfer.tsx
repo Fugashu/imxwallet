@@ -270,8 +270,9 @@ export default function EthTransfer(props: ImxProps) {
   return (
     <form onSubmit={submitForm}>
       <div className="Uploader">
+        <h1>Ethereum Selection</h1>
         <div className="deposit-withdraw-section">
-          <h1>Ethereum Selection:</h1>
+
           <div className="deposit-withdraw-group">
             <TextField
               className="text-field"

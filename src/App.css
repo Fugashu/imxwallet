@@ -1,6 +1,9 @@
 body{
   margin-top: 10px;
-  background: #0E1118;
+  background: white;
+  color: black;
+
+
 }
 .App {
   text-align: center;
@@ -53,8 +56,13 @@ body{
 
 }
 h1{
-  color: white;
+  color: black;
 }
-
-
+#headerSep
+{
+  height: 1px;
+  background-color: #eeeeee;
+  border: none;
+  margin-bottom: 50px;
+}
 

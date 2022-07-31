@@ -21,13 +21,16 @@
 }
 
 .deposit-withdraw-section{
-    color: white;
+    color: black;
     font-size: 14pt;
    /* background-color: burlywood;*/
-    border-radius: 30px;
+    border-radius: 10px;
     margin: 40px;
     padding: 10px;
-    border: 4px solid #0072F5;
+    margin-left: 600px;
+    margin-right: 600px;
+    border: 2px solid #eeeeee;
+    margin-bottom: 150px;
 }
 
 .inventory-wrapper{

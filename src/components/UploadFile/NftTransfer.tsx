@@ -350,8 +350,10 @@ export default function BatchTransfer(props: ImxProps) {
   return (
     <form onSubmit={submitForm}>
       <div className="Uploader">
+        <h1>NFT Selection</h1>
         <div className="deposit-withdraw-section">
-          <h1>NFT Selection:</h1>
+
+
           <div className="deposit-withdraw-group">
             <TextField
               className="text-field"

@@ -15,15 +15,15 @@ interface ActionCard {
 
 export default function ActionAreaCard(props: ActionCard) {
   return (
-    <Card sx={{ maxWidth: 150 }} style={{ padding: "10px", margin: "10px" }}>
-      <Link to={props.routerPath}>
+    <Card sx={{ maxWidth: 220 }} style={{ padding: "10px", margin: "10px" }}>
+      <Link to={props.routerPath} style={{ textDecoration: 'none' }}>
         <CardActionArea>
           <CardMedia component="img" image={props.imageString} />
           <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
+            <Typography gutterBottom variant="h5" component="div" >
               {props.actionName}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" >
               {props.description}
             </Typography>
           </CardContent>

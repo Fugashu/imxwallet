@@ -91,6 +91,7 @@ function App() {
         connectedAddress={walletAddress}
         connectedNetwork={connectedNetwork}
       />
+      <hr id={"headerSep"}/>
       <Routes>
         <Route
           path="/"

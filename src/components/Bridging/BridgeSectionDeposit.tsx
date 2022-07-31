@@ -80,8 +80,9 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
 
   return (
     <div className="deposit-withdraw-section">
+
       <div>
-        <h1>Deposit ERC20:</h1>
+        <h1>Deposit ERC20</h1>
         <div className="deposit-withdraw-wrapper">
           <div className="deposit-withdraw-group">
             <Button
@@ -205,6 +206,7 @@ const BridgeSectionDeposit = (props: BridgeSectionDepositInterface) => {
         </div>
       </div>
     </div>
+
   );
 };
 
